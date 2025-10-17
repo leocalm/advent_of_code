@@ -1,0 +1,53 @@
+use common::base_day::BaseDay;
+{% for day_number in (1..number_of_days) %}
+use crate::bin::day_{{ day_number }}::Day{{  day_number }};
+{% endfor %}
+
+use env_logger::Env;
+use log::info;
+use clap::Parser;
+mod bin;
+
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// Days to include in the run
+    #[arg(short, long)]
+    day: Option<u32>,
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args = Args::parse();
+
+    let include_days = if let Some(day_to_run) = args.day {
+        vec![day_to_run]
+    } else {
+        vec![]
+    };
+
+    let env = Env::default()
+        .filter_or("MY_LOG_LEVEL", "info")
+        .write_style_or("MY_LOG_STYLE", "always");
+
+    env_logger::init_from_env(env);
+
+    let days: Vec<Box<dyn BaseDay>> = vec![
+        {% for day_number in (1..number_of_days) %}
+        Box::new(Day{{day_number}}::new()),
+        {% endfor %}
+    ];
+
+    for mut day in days {
+        let day_number = day.get_day_number();
+        if include_days.is_empty() || include_days.contains(&day_number) {
+            common::file::download_input_file({{year}}, day_number).await?;
+
+            let result = day.run_day()?;
+            info!("Day {} - part 1: {:?}", result.day, result.part_1);
+            info!("Day {} - part 2: {:?}", result.day, result.part_2);
+        }
+    }
+
+    Ok(())
+}

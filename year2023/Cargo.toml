@@ -1,0 +1,13 @@
+[package]
+name = "year2023"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+log = "0.4.28"
+env_logger = "0.11.8"
+reqwest = { version = "0.12.23", features = ["blocking"] }
+clap = { version = "4.5.49", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+common = { path = "../common" }
+regex = "1.12.2"

@@ -1,0 +1,23 @@
+x00: 1
+x01: 1
+x02: 1
+y00: 0
+y01: 1
+y02: 0
+
+x00 XOR y00 -> z00
+x00 AND y00 -> aaa
+x01 XOR y01 -> bbb
+aaa XOR bbb -> z01
+x01 OR y01 -> ccc
+aaa AND ccc -> ddd
+x02 XOR y02 -> eee
+x01 AND y01 -> ggg
+ddd OR ggg -> fff
+fff XOR eee -> z02
+x02 OR y02 -> hhh
+ggg AND hhh -> iii
+ddd & hhh -> kkk
+x02 AND y02 -> jjj
+jjj OR iii -> mmm
+mmm | kkk -> z03

@@ -1,0 +1,12 @@
+[package]
+name = "common"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+log = "0.4.28"
+itertools = "0.14.0"
+reqwest = "0.12.24"
+env_logger = "0.11.8"
+serde = { version = "1.0.228", features = ["derive"] }
+figment = { version = "0.10.19", features = ["toml", "env"] }
