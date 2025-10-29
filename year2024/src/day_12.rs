@@ -1,16 +1,26 @@
+use crate::day_12::Segment::{Horizontal, Vertical};
+use common::base_day::BaseDay;
+use common::file::get_input_path;
+use common::grid::{Grid, Point};
 use std::collections::{HashMap, HashSet};
 use std::error::Error;
 use std::mem::swap;
 use std::path::PathBuf;
-use common::base_day::BaseDay;
-use common::file::get_input_path;
-use crate::day_12::Segment::{Horizontal, Vertical};
-use common::grid::{Grid, Point};
 
 #[derive(Debug)]
 enum Segment {
-    Horizontal { y: i32, x1: i32, x2: i32, regions: (char, char) },
-    Vertical { x: i32, y1: i32, y2: i32, regions: (char, char) },
+    Horizontal {
+        y: i32,
+        x1: i32,
+        x2: i32,
+        regions: (char, char),
+    },
+    Vertical {
+        x: i32,
+        y1: i32,
+        y2: i32,
+        regions: (char, char),
+    },
 }
 
 pub struct Day12 {
@@ -22,11 +32,16 @@ impl Day12 {
     pub fn new() -> Day12 {
         Day12 {
             day_number: 12,
-            file_path: get_input_path(2024, 12)
+            file_path: get_input_path(2024, 12),
         }
     }
 
-    fn fill_area(&self, grid: &mut Grid<char>, areas: &mut HashMap<char, Vec<HashSet<Point>>>, current_position: Point) {
+    fn fill_area(
+        &self,
+        grid: &mut Grid<char>,
+        areas: &mut HashMap<char, Vec<HashSet<Point>>>,
+        current_position: Point,
+    ) {
         let value = *grid.get(current_position).unwrap();
         grid.update(current_position, '.');
         areas.entry(value).or_insert(Vec::new());
@@ -59,7 +74,7 @@ impl Day12 {
 
     fn calc_perimeter(&self, area: &HashSet<Point>) -> u64 {
         let mut result: u64 = 0;
-        let possible_neighbours:Vec<(i32, i32)> = vec![(-1, 0), (1, 0), (0, -1), (0, 1)];
+        let possible_neighbours: Vec<(i32, i32)> = vec![(-1, 0), (1, 0), (0, -1), (0, 1)];
         for a in area {
             let mut current = 4;
             for p in possible_neighbours.iter() {
@@ -89,14 +104,24 @@ impl Day12 {
 
         for seg in segments {
             match seg {
-                Horizontal { y, mut x1, mut x2,mut  regions} => {
+                Horizontal {
+                    y,
+                    mut x1,
+                    mut x2,
+                    mut regions,
+                } => {
                     if x1 > x2 {
                         swap(&mut x1, &mut x2);
                         regions = (regions.1, regions.0);
                     }
                     horizontals.entry(y).or_default().push((x1, x2, regions));
                 }
-                Vertical { x, mut y1, mut y2, mut regions} => {
+                Vertical {
+                    x,
+                    mut y1,
+                    mut y2,
+                    mut regions,
+                } => {
                     if y1 > y2 {
                         swap(&mut y1, &mut y2);
                         regions = (regions.1, regions.0);
@@ -111,14 +136,26 @@ impl Day12 {
 
             let mut current_range = ranges[0];
             for range in ranges.into_iter().skip(1) {
-                if range.0 <= current_range.1 && (range.2.0 == current_range.2.0 || range.2.1 == current_range.2.1) {
+                if range.0 <= current_range.1
+                    && (range.2.0 == current_range.2.0 || range.2.1 == current_range.2.1)
+                {
                     current_range.1 = current_range.1.max(range.1);
                 } else {
-                    result.push(Horizontal { y, x1: current_range.0, x2: current_range.1, regions: current_range.2 });
+                    result.push(Horizontal {
+                        y,
+                        x1: current_range.0,
+                        x2: current_range.1,
+                        regions: current_range.2,
+                    });
                     current_range = range;
                 }
             }
-            result.push(Horizontal { y, x1: current_range.0, x2: current_range.1, regions: current_range.2 });
+            result.push(Horizontal {
+                y,
+                x1: current_range.0,
+                x2: current_range.1,
+                regions: current_range.2,
+            });
         }
 
         for (x, mut ranges) in verticals {
@@ -126,14 +163,26 @@ impl Day12 {
 
             let mut current_range = ranges[0];
             for range in ranges.into_iter().skip(1) {
-                if range.0 <= current_range.1 && (range.2.0 == current_range.2.0 || range.2.1 == current_range.2.1)  {
+                if range.0 <= current_range.1
+                    && (range.2.0 == current_range.2.0 || range.2.1 == current_range.2.1)
+                {
                     current_range.1 = current_range.1.max(range.1);
                 } else {
-                    result.push(Vertical { x, y1: current_range.0, y2: current_range.1, regions: current_range.2 });
+                    result.push(Vertical {
+                        x,
+                        y1: current_range.0,
+                        y2: current_range.1,
+                        regions: current_range.2,
+                    });
                     current_range = range;
                 }
             }
-            result.push(Vertical { x, y1: current_range.0, y2: current_range.1, regions: current_range.2 });
+            result.push(Vertical {
+                x,
+                y1: current_range.0,
+                y2: current_range.1,
+                regions: current_range.2,
+            });
         }
 
         result
@@ -144,27 +193,109 @@ impl Day12 {
 
         for coordinates in area {
             if coordinates.x == 0 {
-                segments.push(Horizontal { y: coordinates.x, x1: coordinates.y, x2: coordinates.y + 1, regions: (' ', *grid.get(Point { x: 0, y: coordinates.y }).unwrap_or(&' '))});
+                segments.push(Horizontal {
+                    y: coordinates.x,
+                    x1: coordinates.y,
+                    x2: coordinates.y + 1,
+                    regions: (
+                        ' ',
+                        *grid
+                            .get(Point {
+                                x: 0,
+                                y: coordinates.y,
+                            })
+                            .unwrap_or(&' '),
+                    ),
+                });
             } else {
-                if !area.contains(&Point { x: coordinates.x - 1, y: coordinates.y }) {
-                    segments.push(Horizontal { y: coordinates.x, x1: coordinates.y, x2: coordinates.y + 1, regions: (*grid.get(Point { x: coordinates.x - 1, y: coordinates.y }).unwrap_or(&' '), *grid.get(*coordinates).unwrap_or(&' '))});
+                if !area.contains(&Point {
+                    x: coordinates.x - 1,
+                    y: coordinates.y,
+                }) {
+                    segments.push(Horizontal {
+                        y: coordinates.x,
+                        x1: coordinates.y,
+                        x2: coordinates.y + 1,
+                        regions: (
+                            *grid
+                                .get(Point {
+                                    x: coordinates.x - 1,
+                                    y: coordinates.y,
+                                })
+                                .unwrap_or(&' '),
+                            *grid.get(*coordinates).unwrap_or(&' '),
+                        ),
+                    });
                 }
             }
 
-            if !area.contains(&Point { x: coordinates.x + 1, y: coordinates.y }) {
-                segments.push(Horizontal { y: coordinates.x + 1, x1: coordinates.y, x2: coordinates.y + 1, regions: (*grid.get(*coordinates).unwrap_or(&' '), *grid.get(Point { x: coordinates.x + 1, y: coordinates.y }).unwrap_or(&' '))});
+            if !area.contains(&Point {
+                x: coordinates.x + 1,
+                y: coordinates.y,
+            }) {
+                segments.push(Horizontal {
+                    y: coordinates.x + 1,
+                    x1: coordinates.y,
+                    x2: coordinates.y + 1,
+                    regions: (
+                        *grid.get(*coordinates).unwrap_or(&' '),
+                        *grid
+                            .get(Point {
+                                x: coordinates.x + 1,
+                                y: coordinates.y,
+                            })
+                            .unwrap_or(&' '),
+                    ),
+                });
             }
 
             if coordinates.y == 0 {
-                segments.push(Vertical { x: coordinates.y, y1: coordinates.x, y2: coordinates.x + 1, regions: (' ', *grid.get(*coordinates).unwrap_or(&' '))});
+                segments.push(Vertical {
+                    x: coordinates.y,
+                    y1: coordinates.x,
+                    y2: coordinates.x + 1,
+                    regions: (' ', *grid.get(*coordinates).unwrap_or(&' ')),
+                });
             } else {
-                if !area.contains(&Point { x: coordinates.x, y: coordinates.y - 1 }) {
-                    segments.push(Vertical { x: coordinates.y, y1: coordinates.x, y2: coordinates.x + 1, regions: (*grid.get(Point { x: coordinates.x, y: coordinates.y - 1 }).unwrap_or(&' '), *grid.get(*coordinates).unwrap_or(&' '))});
+                if !area.contains(&Point {
+                    x: coordinates.x,
+                    y: coordinates.y - 1,
+                }) {
+                    segments.push(Vertical {
+                        x: coordinates.y,
+                        y1: coordinates.x,
+                        y2: coordinates.x + 1,
+                        regions: (
+                            *grid
+                                .get(Point {
+                                    x: coordinates.x,
+                                    y: coordinates.y - 1,
+                                })
+                                .unwrap_or(&' '),
+                            *grid.get(*coordinates).unwrap_or(&' '),
+                        ),
+                    });
                 }
             }
 
-            if !area.contains(&Point { x: coordinates.x, y: coordinates.y + 1 }) {
-                segments.push(Vertical { x: coordinates.y + 1, y1: coordinates.x, y2: coordinates.x + 1, regions: (*grid.get(*coordinates).unwrap_or(&' '), *grid.get(Point { x: coordinates.x, y: coordinates.y + 1 }).unwrap_or(&' '))});
+            if !area.contains(&Point {
+                x: coordinates.x,
+                y: coordinates.y + 1,
+            }) {
+                segments.push(Vertical {
+                    x: coordinates.y + 1,
+                    y1: coordinates.x,
+                    y2: coordinates.x + 1,
+                    regions: (
+                        *grid.get(*coordinates).unwrap_or(&' '),
+                        *grid
+                            .get(Point {
+                                x: coordinates.x,
+                                y: coordinates.y + 1,
+                            })
+                            .unwrap_or(&' '),
+                    ),
+                });
             }
         }
 
@@ -194,7 +325,9 @@ impl Day12 {
 }
 
 impl BaseDay for Day12 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let mut result: u64 = 0;
@@ -229,4 +362,3 @@ impl BaseDay for Day12 {
         self.file_path.clone()
     }
 }
-                

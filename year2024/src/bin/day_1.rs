@@ -1,9 +1,9 @@
-use std::path::PathBuf;
-use std::str::FromStr;
-use log::info;
 use common::base_day::BaseDay;
 use common::file::get_input_path;
 use common::utils::init_logger;
+use log::info;
+use std::path::PathBuf;
+use std::str::FromStr;
 
 pub struct Day1 {
     day_number: u32,
@@ -23,7 +23,10 @@ impl Day1 {
         let mut col_2: Vec<u64> = Vec::new();
 
         for line in input {
-            let split: Vec<u64> = line.split("   ").map(|x| u64::from_str(x).expect("Error parsing")).collect::<Vec<u64>>();
+            let split: Vec<u64> = line
+                .split("   ")
+                .map(|x| u64::from_str(x).expect("Error parsing"))
+                .collect::<Vec<u64>>();
             col_1.push(split[0]);
             col_2.push(split[1]);
         }
@@ -32,13 +35,13 @@ impl Day1 {
     }
 }
 
-impl BaseDay for Day1{
-    fn get_day_number(&self) -> u32{
+impl BaseDay for Day1 {
+    fn get_day_number(&self) -> u32 {
         self.day_number
     }
 
     fn part_1(&mut self) -> Result<String, Box<dyn std::error::Error>> {
-        let (mut col_1,mut col_2) = self.read_lines_into_columns(self.read_file_into_vec());
+        let (mut col_1, mut col_2) = self.read_lines_into_columns(self.read_file_into_vec());
 
         col_1.sort();
         col_2.sort();

@@ -1,6 +1,9 @@
-use serde::Deserialize;
-use figment::{Figment, providers::{Format, Toml, Env}};
 use crate::file::project_root;
+use figment::{
+    Figment,
+    providers::{Env, Format, Toml},
+};
+use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 pub struct Config {

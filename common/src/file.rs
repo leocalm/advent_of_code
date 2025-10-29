@@ -1,9 +1,12 @@
-use std::{fs, io, env};
-use std::path::{Path, PathBuf};
 use crate::config::get_config;
+use std::path::{Path, PathBuf};
+use std::{env, fs, io};
 
 pub fn project_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap().to_path_buf()
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .unwrap()
+        .to_path_buf()
 }
 
 pub fn get_data_dir(year: u32, day: u32) -> PathBuf {
@@ -25,7 +28,10 @@ pub async fn download_input_file(year: u32, day: u32) -> Result<(), Box<dyn std:
 
     let client = reqwest::Client::new();
     let response = client
-        .get(&format!("https://adventofcode.com/{}/day/{}/input", year, day))
+        .get(&format!(
+            "https://adventofcode.com/{}/day/{}/input",
+            year, day
+        ))
         .header("Cookie", config.cookie.as_str())
         .send()
         .await?;

@@ -1,6 +1,7 @@
 use crate::bin::day_1::Day1;
+use crate::bin::day_21::Day21;
+use crate::bin::day_22::Day22;
 use crate::day_2::Day2;
-use common::base_day::BaseDay;
 use crate::day_3::Day3;
 use crate::day_4::Day4;
 use crate::day_5::Day5;
@@ -19,24 +20,16 @@ use crate::day_17::Day17;
 use crate::day_18::Day18;
 use crate::day_19::Day19;
 use crate::day_20::Day20;
-use crate::bin::day_21::Day21;
-use crate::bin::day_22::Day22;
 use bin::day_23::Day23;
 use bin::day_24::Day24;
 use bin::day_25::Day25;
+use common::base_day::BaseDay;
 
+use clap::Parser;
 use env_logger::Env;
 use log::info;
-use clap::Parser;
 
-mod day_2;
-mod day_3;
-mod day_4;
-mod day_5;
-mod day_6;
-mod day_7;
-mod day_8;
-mod day_9;
+mod bin;
 mod day_10;
 mod day_11;
 mod day_12;
@@ -47,8 +40,15 @@ mod day_16;
 mod day_17;
 mod day_18;
 mod day_19;
+mod day_2;
 mod day_20;
-mod bin;
+mod day_3;
+mod day_4;
+mod day_5;
+mod day_6;
+mod day_7;
+mod day_8;
+mod day_9;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]

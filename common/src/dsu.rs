@@ -34,14 +34,16 @@ impl<T: Copy + Eq + Hash + Debug> DSU<T> {
 
         if *self.sizes.get(&node_parent).unwrap() < *self.sizes.get(&other_parent).unwrap() {
             self.parents.insert(node_parent, other_parent);
-            self.sizes.insert(other_parent, *self.sizes.get(&node_parent).unwrap() + 1);
+            self.sizes
+                .insert(other_parent, *self.sizes.get(&node_parent).unwrap() + 1);
         } else {
             self.parents.insert(other_parent, node_parent);
-            self.sizes.insert(node_parent, *self.sizes.get(&other_parent).unwrap() + 1);
+            self.sizes
+                .insert(node_parent, *self.sizes.get(&other_parent).unwrap() + 1);
         }
     }
 
-    pub fn find(& mut self, child: T) -> Option<T> {
+    pub fn find(&mut self, child: T) -> Option<T> {
         if self.parents.get(&child).is_some_and(|&c| c == child) {
             Some(child)
         } else if let Some(parent) = self.parents.get(&child) {

@@ -1,9 +1,9 @@
-use std::error::Error;
-use std::path::PathBuf;
+use common::file::get_input_path;
 use common::{base_day::BaseDay, test_utils::init_logger};
 use log::info;
 use rusqlite::Connection;
-use common::file::get_input_path;
+use std::error::Error;
+use std::path::PathBuf;
 
 const SECRETS: u128 = 2_000;
 
@@ -27,10 +27,10 @@ fn day_secret(number: u128) -> u128 {
 
 fn day_prices(number: u128) -> Vec<u128> {
     let mut secret = number;
-    let mut prices= Vec::new();
-    
+    let mut prices = Vec::new();
+
     prices.push(secret % 10);
-    
+
     for _ in 0..SECRETS {
         secret = next_secret(secret);
         prices.push(secret % 10);
@@ -40,7 +40,10 @@ fn day_prices(number: u128) -> Vec<u128> {
 }
 
 fn diffs(prices: &[u128]) -> Vec<i128> {
-    prices.windows(2).map(|pair| pair[1] as i128 - pair[0] as i128).collect()
+    prices
+        .windows(2)
+        .map(|pair| pair[1] as i128 - pair[0] as i128)
+        .collect()
 }
 
 fn max_bananas(conn: Connection) -> Result<u64, Box<dyn Error>> {
@@ -61,9 +64,7 @@ limit 1
 ;
         ")?;
 
-    let result = stmt.query_one(
-        [], |row| row.get::<_, i64>(1)
-    )?;
+    let result = stmt.query_one([], |row| row.get::<_, i64>(1))?;
 
     Ok(result as u64)
 }
@@ -71,11 +72,11 @@ limit 1
 fn create_tables(conn: &Connection) -> Result<(), Box<dyn Error>> {
     conn.execute(
         "CREATE TABLE if not exists sequence (secret INTEGER, start_index INTEGER, diff TEXT)",
-        ()
+        (),
     )?;
     conn.execute(
         "CREATE TABLE if not exists price (secret INTEGER, price_index INTEGER, price INTEGER)",
-        ()
+        (),
     )?;
 
     Ok(())
@@ -95,12 +96,8 @@ fn solve(secrets: &[u128]) -> Result<u64, Box<dyn Error>> {
 
     let tx = conn.transaction()?;
     {
-        let mut insert_into_diff = tx.prepare(
-            "INSERT INTO sequence VALUES (?, ?, ?)"
-        )?;
-        let mut insert_into_price = tx.prepare(
-            "INSERT INTO price VALUES (?, ?, ?)"
-        )?;
+        let mut insert_into_diff = tx.prepare("INSERT INTO sequence VALUES (?, ?, ?)")?;
+        let mut insert_into_price = tx.prepare("INSERT INTO price VALUES (?, ?, ?)")?;
 
         for &secret in secrets.iter() {
             let day_prices = day_prices(secret);
@@ -110,17 +107,15 @@ fn solve(secrets: &[u128]) -> Result<u64, Box<dyn Error>> {
                 let seq = format!(
                     "{},{},{},{}",
                     diffs[start_index],
-                    diffs[start_index +1],
-                    diffs[start_index +2],
-                    diffs[start_index +3]
+                    diffs[start_index + 1],
+                    diffs[start_index + 2],
+                    diffs[start_index + 3]
                 );
                 insert_into_diff.execute((secret as i64, start_index, seq))?;
             }
 
             for (price_index, &price) in day_prices.iter().enumerate() {
-                insert_into_price.execute(
-                    (secret as i64, price_index, price as i64)
-                )?;
+                insert_into_price.execute((secret as i64, price_index, price as i64))?;
             }
         }
     }
@@ -160,11 +155,13 @@ impl BaseDay for Day22 {
 
     fn part_2(&mut self) -> Result<String, Box<dyn Error>> {
         Ok(solve(
-            &self.read_file_into_vec()
+            &self
+                .read_file_into_vec()
                 .iter()
                 .map(|line| line.parse::<u128>().unwrap())
-                .collect::<Vec<u128>>()
-        )?.to_string())
+                .collect::<Vec<u128>>(),
+        )?
+        .to_string())
     }
 
     fn get_input_file_path(&self) -> PathBuf {
@@ -188,33 +185,24 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod test {
-    use std::path::Path;
     use super::*;
-    
+    use std::path::Path;
+
     #[test]
     fn next_secret_test() {
         let expected_results = [
-            15887950,
-            16495136,
-            527345,
-            704524,
-            1553684,
-            12683156,
-            11100544,
-            12249484,
-            7753432,
+            15887950, 16495136, 527345, 704524, 1553684, 12683156, 11100544, 12249484, 7753432,
             5908254,
         ];
         let mut secret = 123;
-    
+
         for expected in expected_results {
             let result = next_secret(secret);
             assert_eq!(result, expected);
             secret = result;
         }
-        
+
         assert_eq!(next_secret(123), 15_887_950);
-        
     }
 
     #[test]
@@ -258,7 +246,10 @@ mod test {
         let mut day = Day22::new();
         let expected = "37327623";
 
-        let project_root = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap().to_path_buf();
+        let project_root = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .unwrap()
+            .to_path_buf();
         let path = project_root.join("data/2024/day_22/example_1.txt");
         day.file_path = path;
 
@@ -268,18 +259,7 @@ mod test {
 
     #[test]
     fn day_prices_test() {
-        let expected = [
-            3,
-            0,
-            6,
-            5,
-            4,
-            4,
-            6,
-            4,
-            4,
-            2,
-        ];
+        let expected = [3, 0, 6, 5, 4, 4, 6, 4, 4, 2];
 
         let prices = day_prices(123u128);
         assert_eq!(prices[0..10], expected);
@@ -294,15 +274,16 @@ mod test {
         assert_eq!(result, expected);
     }
 
-
-
     #[test]
     fn part_2_test() {
         let expected = 23.to_string();
 
         let mut day = Day22::new();
 
-        let project_root = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap().to_path_buf();
+        let project_root = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .unwrap()
+            .to_path_buf();
         let path = project_root.join("data/2024/day_22/example_2.txt");
         day.file_path = path;
 

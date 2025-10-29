@@ -1,8 +1,8 @@
-use std::error::Error;
-use std::path::PathBuf;
 use common::base_day::BaseDay;
 use common::file::get_input_path;
 use common::grid::{Grid, Point};
+use std::error::Error;
+use std::path::PathBuf;
 
 pub struct Day4 {
     day_number: u32,
@@ -13,14 +13,28 @@ impl Day4 {
     pub fn new() -> Day4 {
         Day4 {
             day_number: 4,
-            file_path: get_input_path(2024, 4)
+            file_path: get_input_path(2024, 4),
         }
     }
 
     fn xmas_vertical_top_to_bottom(&self, grid: &Grid<char>, point: Point) -> bool {
-        grid.get(Point { x: point.x + 1, y: point.y }).is_some_and(|c| *c == 'M')
-        && grid.get(Point { x: point.x + 2, y: point.y }).is_some_and(|c| *c == 'A')
-        && grid.get(Point { x: point.x + 3, y: point.y }).is_some_and(|c| *c == 'S')
+        grid.get(Point {
+            x: point.x + 1,
+            y: point.y,
+        })
+        .is_some_and(|c| *c == 'M')
+            && grid
+                .get(Point {
+                    x: point.x + 2,
+                    y: point.y,
+                })
+                .is_some_and(|c| *c == 'A')
+            && grid
+                .get(Point {
+                    x: point.x + 3,
+                    y: point.y,
+                })
+                .is_some_and(|c| *c == 'S')
     }
 
     fn xmas_vertical_bottom_to_top(&self, grid: &Grid<char>, point: Point) -> bool {
@@ -28,15 +42,43 @@ impl Day4 {
             return false;
         }
 
-        grid.get(Point { x: point.x - 1, y: point.y }).is_some_and(|c| *c == 'M')
-        && grid.get(Point { x: point.x - 2, y: point.y }).is_some_and(|c| *c == 'A')
-        && grid.get(Point { x: point.x - 3, y: point.y }).is_some_and(|c| *c == 'S')
+        grid.get(Point {
+            x: point.x - 1,
+            y: point.y,
+        })
+        .is_some_and(|c| *c == 'M')
+            && grid
+                .get(Point {
+                    x: point.x - 2,
+                    y: point.y,
+                })
+                .is_some_and(|c| *c == 'A')
+            && grid
+                .get(Point {
+                    x: point.x - 3,
+                    y: point.y,
+                })
+                .is_some_and(|c| *c == 'S')
     }
 
     fn xmas_horizontal_left_to_right(&self, grid: &Grid<char>, point: Point) -> bool {
-        grid.get(Point { x: point.x, y: point.y + 1 }).is_some_and(|c| *c == 'M')
-        && grid.get(Point { x: point.x, y: point.y + 2 }).is_some_and(|c| *c == 'A')
-        && grid.get(Point { x: point.x, y: point.y + 3 }).is_some_and(|c| *c == 'S')
+        grid.get(Point {
+            x: point.x,
+            y: point.y + 1,
+        })
+        .is_some_and(|c| *c == 'M')
+            && grid
+                .get(Point {
+                    x: point.x,
+                    y: point.y + 2,
+                })
+                .is_some_and(|c| *c == 'A')
+            && grid
+                .get(Point {
+                    x: point.x,
+                    y: point.y + 3,
+                })
+                .is_some_and(|c| *c == 'S')
     }
 
     fn xmas_horizontal_right_to_left(&self, grid: &Grid<char>, point: Point) -> bool {
@@ -44,15 +86,43 @@ impl Day4 {
             return false;
         }
 
-        grid.get(Point { x: point.x, y: point.y - 1 }).is_some_and(|c| *c == 'M')
-        && grid.get(Point { x: point.x, y: point.y - 2 }).is_some_and(|c| *c == 'A')
-        && grid.get(Point { x: point.x, y: point.y - 3 }).is_some_and(|c| *c == 'S')
+        grid.get(Point {
+            x: point.x,
+            y: point.y - 1,
+        })
+        .is_some_and(|c| *c == 'M')
+            && grid
+                .get(Point {
+                    x: point.x,
+                    y: point.y - 2,
+                })
+                .is_some_and(|c| *c == 'A')
+            && grid
+                .get(Point {
+                    x: point.x,
+                    y: point.y - 3,
+                })
+                .is_some_and(|c| *c == 'S')
     }
 
     fn xmas_diagonal_top_to_bottom_left_to_right(&self, grid: &Grid<char>, point: Point) -> bool {
-        grid.get(Point { x: point.x + 1, y: point.y + 1 }).is_some_and(|c| *c == 'M')
-        && grid.get(Point { x: point.x + 2, y: point.y + 2 }).is_some_and(|c| *c == 'A')
-        && grid.get(Point { x: point.x + 3, y: point.y + 3 }).is_some_and(|c| *c == 'S')
+        grid.get(Point {
+            x: point.x + 1,
+            y: point.y + 1,
+        })
+        .is_some_and(|c| *c == 'M')
+            && grid
+                .get(Point {
+                    x: point.x + 2,
+                    y: point.y + 2,
+                })
+                .is_some_and(|c| *c == 'A')
+            && grid
+                .get(Point {
+                    x: point.x + 3,
+                    y: point.y + 3,
+                })
+                .is_some_and(|c| *c == 'S')
     }
 
     fn xmas_diagonal_top_to_bottom_right_to_left(&self, grid: &Grid<char>, point: Point) -> bool {
@@ -60,9 +130,23 @@ impl Day4 {
             return false;
         }
 
-        grid.get(Point { x: point.x + 1, y: point.y - 1 }).is_some_and(|c| *c == 'M')
-        && grid.get(Point { x: point.x + 2, y: point.y - 2 }).is_some_and(|c| *c == 'A')
-        && grid.get(Point { x: point.x + 3, y: point.y - 3 }).is_some_and(|c| *c == 'S')
+        grid.get(Point {
+            x: point.x + 1,
+            y: point.y - 1,
+        })
+        .is_some_and(|c| *c == 'M')
+            && grid
+                .get(Point {
+                    x: point.x + 2,
+                    y: point.y - 2,
+                })
+                .is_some_and(|c| *c == 'A')
+            && grid
+                .get(Point {
+                    x: point.x + 3,
+                    y: point.y - 3,
+                })
+                .is_some_and(|c| *c == 'S')
     }
 
     fn xmas_diagonal_bottom_to_top_left_to_right(&self, grid: &Grid<char>, point: Point) -> bool {
@@ -70,9 +154,23 @@ impl Day4 {
             return false;
         }
 
-        grid.get(Point { x: point.x - 1, y: point.y + 1 }).is_some_and(|c| *c == 'M')
-        && grid.get(Point { x: point.x - 2, y: point.y + 2 }).is_some_and(|c| *c == 'A')
-        && grid.get(Point { x: point.x - 3, y: point.y + 3 }).is_some_and(|c| *c == 'S')
+        grid.get(Point {
+            x: point.x - 1,
+            y: point.y + 1,
+        })
+        .is_some_and(|c| *c == 'M')
+            && grid
+                .get(Point {
+                    x: point.x - 2,
+                    y: point.y + 2,
+                })
+                .is_some_and(|c| *c == 'A')
+            && grid
+                .get(Point {
+                    x: point.x - 3,
+                    y: point.y + 3,
+                })
+                .is_some_and(|c| *c == 'S')
     }
 
     fn xmas_diagonal_bottom_to_top_right_to_left(&self, grid: &Grid<char>, point: Point) -> bool {
@@ -80,19 +178,57 @@ impl Day4 {
             return false;
         }
 
-        grid.get(Point { x: point.x - 1, y: point.y - 1 }).is_some_and(|c| *c == 'M')
-        && grid.get(Point { x: point.x - 2, y: point.y - 2 }).is_some_and(|c| *c == 'A')
-        && grid.get(Point { x: point.x - 3, y: point.y - 3 }).is_some_and(|c| *c == 'S')
+        grid.get(Point {
+            x: point.x - 1,
+            y: point.y - 1,
+        })
+        .is_some_and(|c| *c == 'M')
+            && grid
+                .get(Point {
+                    x: point.x - 2,
+                    y: point.y - 2,
+                })
+                .is_some_and(|c| *c == 'A')
+            && grid
+                .get(Point {
+                    x: point.x - 3,
+                    y: point.y - 3,
+                })
+                .is_some_and(|c| *c == 'S')
     }
 
     fn is_second_diagonal_x_mask(&self, grid: &Grid<char>, point: Point) -> bool {
-        if grid.get(Point { x: point.x - 1, y: point.y + 1 }).is_some_and(|c| *c == 'M') {
-            if grid.get(Point { x: point.x + 1, y: point.y - 1 }).is_some_and(|c| *c == 'S') {
+        if grid
+            .get(Point {
+                x: point.x - 1,
+                y: point.y + 1,
+            })
+            .is_some_and(|c| *c == 'M')
+        {
+            if grid
+                .get(Point {
+                    x: point.x + 1,
+                    y: point.y - 1,
+                })
+                .is_some_and(|c| *c == 'S')
+            {
                 return true;
             }
         }
-        if grid.get(Point { x: point.x - 1, y: point.y + 1 }).is_some_and(|c| *c == 'S') {
-            if grid.get(Point { x: point.x + 1, y: point.y - 1 }).is_some_and(|c| *c == 'M') {
+        if grid
+            .get(Point {
+                x: point.x - 1,
+                y: point.y + 1,
+            })
+            .is_some_and(|c| *c == 'S')
+        {
+            if grid
+                .get(Point {
+                    x: point.x + 1,
+                    y: point.y - 1,
+                })
+                .is_some_and(|c| *c == 'M')
+            {
                 return true;
             }
         }
@@ -105,14 +241,38 @@ impl Day4 {
             return false;
         }
 
-        if grid.get(Point { x: point.x - 1, y: point.y - 1 }).is_some_and(|c| *c == 'M') {
-            if grid.get(Point { x: point.x + 1, y: point.y + 1 }).is_some_and(|c| *c == 'S') {
+        if grid
+            .get(Point {
+                x: point.x - 1,
+                y: point.y - 1,
+            })
+            .is_some_and(|c| *c == 'M')
+        {
+            if grid
+                .get(Point {
+                    x: point.x + 1,
+                    y: point.y + 1,
+                })
+                .is_some_and(|c| *c == 'S')
+            {
                 return self.is_second_diagonal_x_mask(grid, point);
             }
         }
 
-        if grid.get(Point { x: point.x - 1, y: point.y - 1 }).is_some_and(|c| *c == 'S') {
-            if grid.get(Point { x: point.x + 1, y: point.y + 1 }).is_some_and(|c| *c == 'M') {
+        if grid
+            .get(Point {
+                x: point.x - 1,
+                y: point.y - 1,
+            })
+            .is_some_and(|c| *c == 'S')
+        {
+            if grid
+                .get(Point {
+                    x: point.x + 1,
+                    y: point.y + 1,
+                })
+                .is_some_and(|c| *c == 'M')
+            {
                 return self.is_second_diagonal_x_mask(grid, point);
             }
         }
@@ -122,7 +282,9 @@ impl Day4 {
 }
 
 impl BaseDay for Day4 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let mut result: u64 = 0;
@@ -131,7 +293,10 @@ impl BaseDay for Day4 {
 
         for row in 0..input.len() {
             for col in 0..input[row].len() {
-                let point = Point{ x: row as i32, y: col as i32 };
+                let point = Point {
+                    x: row as i32,
+                    y: col as i32,
+                };
                 if grid.get(point).is_some() && *grid.get(point).unwrap() == 'X' {
                     if self.xmas_vertical_top_to_bottom(&grid, point) {
                         result += 1;
@@ -171,7 +336,10 @@ impl BaseDay for Day4 {
 
         for row in 0..input.len() {
             for col in 0..input[row].len() {
-                let point = Point{ x: row as i32, y: col as i32 };
+                let point = Point {
+                    x: row as i32,
+                    y: col as i32,
+                };
                 if grid.get(point).is_some() && *grid.get(point).unwrap() == 'A' {
                     if self.is_x_mas(&grid, point) {
                         result += 1;

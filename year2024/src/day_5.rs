@@ -1,8 +1,8 @@
+use common::base_day::BaseDay;
+use common::file::get_input_path;
 use std::collections::HashSet;
 use std::error::Error;
 use std::path::PathBuf;
-use common::base_day::BaseDay;
-use common::file::get_input_path;
 
 pub struct Day5 {
     day_number: u32,
@@ -52,11 +52,21 @@ impl Day5 {
 
     fn read_rule(&mut self, line: &String) {
         let (first, second) = line.split_once("|").unwrap();
-        self.rules.insert((first.parse::<u64>().unwrap(), second.parse::<u64>().unwrap()));
-        self.reversed_rules.insert((second.parse::<u64>().unwrap(), first.parse::<u64>().unwrap()));
+        self.rules.insert((
+            first.parse::<u64>().unwrap(),
+            second.parse::<u64>().unwrap(),
+        ));
+        self.reversed_rules.insert((
+            second.parse::<u64>().unwrap(),
+            first.parse::<u64>().unwrap(),
+        ));
     }
 
-    fn fix_line_and_get_middle(&mut self, data: &Vec<u64>, errors: &Vec<((usize, u64), (usize, u64))>) -> u64 {
+    fn fix_line_and_get_middle(
+        &mut self,
+        data: &Vec<u64>,
+        errors: &Vec<((usize, u64), (usize, u64))>,
+    ) -> u64 {
         let error = *errors.first().unwrap();
 
         let mut new_data = data.clone();
@@ -73,7 +83,9 @@ impl Day5 {
 }
 
 impl BaseDay for Day5 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let mut result: u64 = 0;
@@ -82,7 +94,10 @@ impl BaseDay for Day5 {
             if line.contains("|") {
                 self.read_rule(&line);
             } else if line.len() > 1 {
-                let data = line.split(",").map(|x| x.parse::<u64>().unwrap()).collect::<Vec<u64>>();
+                let data = line
+                    .split(",")
+                    .map(|x| x.parse::<u64>().unwrap())
+                    .collect::<Vec<u64>>();
                 if self.is_line_valid(&data) {
                     let middle = data.get(data.len() / 2).unwrap();
                     result += middle;
@@ -100,7 +115,10 @@ impl BaseDay for Day5 {
             if line.contains("|") {
                 self.read_rule(&line);
             } else if line.len() > 1 {
-                let data = line.split(",").map(|x| x.parse::<u64>().unwrap()).collect::<Vec<u64>>();
+                let data = line
+                    .split(",")
+                    .map(|x| x.parse::<u64>().unwrap())
+                    .collect::<Vec<u64>>();
                 let errors = self.get_errors(&data);
                 if errors.len() > 0 {
                     result += self.fix_line_and_get_middle(&data, &errors);

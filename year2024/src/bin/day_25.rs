@@ -1,10 +1,10 @@
-use std::array;
-use std::error::Error;
-use std::path::PathBuf;
-use log::info;
 use common::base_day::BaseDay;
 use common::file::get_input_path;
 use common::utils::init_logger;
+use log::info;
+use std::array;
+use std::error::Error;
+use std::path::PathBuf;
 
 pub struct Day25 {
     day_number: u32,
@@ -21,22 +21,48 @@ impl Day25 {
 }
 
 impl BaseDay for Day25 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let mut locks = Vec::new();
         let mut keys = Vec::new();
 
-        self.read_file_into_vec_of_vec().chunks(8).for_each(|slice| {
-            let line = &slice[0];
-            let data: [u32; 5] = array::from_fn(|i| [0u32; 5][i] + slice[1..=5].iter().map(|l| if l[i] == '#' { 1u32 } else { 0u32 }).sum::<u32>() );
+        self.read_file_into_vec_of_vec()
+            .chunks(8)
+            .for_each(|slice| {
+                let line = &slice[0];
+                let data: [u32; 5] = array::from_fn(|i| {
+                    [0u32; 5][i]
+                        + slice[1..=5]
+                            .iter()
+                            .map(|l| if l[i] == '#' { 1u32 } else { 0u32 })
+                            .sum::<u32>()
+                });
 
-            if line == &['#'; 5] { &mut locks } else { &mut keys }.push(data);
+                if line == &['#'; 5] {
+                    &mut locks
+                } else {
+                    &mut keys
+                }
+                .push(data);
+            });
+
+        let count = locks.iter().fold(0, |lock_acc, lock| {
+            lock_acc
+                + keys.iter().fold(0, |key_acc, key| {
+                    key_acc
+                        + if array::from_fn::<u32, 5, _>(|i| lock[i] + key[i])
+                            .iter()
+                            .any(|&s| s > 5)
+                        {
+                            0
+                        } else {
+                            1
+                        }
+                })
         });
-
-        let count = locks.iter().fold(0, |lock_acc, lock| lock_acc + keys.iter().fold(0, |key_acc, key| {
-           key_acc + if array::from_fn::<u32, 5, _>(|i| lock[i] + key[i]).iter().any(|&s| s > 5) { 0 } else { 1 }
-        }));
 
         Ok(count.to_string())
     }
@@ -65,8 +91,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod test {
-    use common::file::get_data_dir;
     use super::*;
+    use common::file::get_data_dir;
     use common::test_utils::init_logger;
 
     #[test]

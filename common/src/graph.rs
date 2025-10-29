@@ -1,8 +1,8 @@
+use std::cmp::Reverse;
+use std::collections::BinaryHeap;
 use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
 use std::hash::Hash;
-use std::cmp::Reverse;
-use std::collections::BinaryHeap;
 
 #[derive(Debug, Eq, PartialEq, Clone, Hash, PartialOrd, Ord, Default, Copy)]
 pub struct Node<T> {
@@ -39,7 +39,12 @@ impl<T: PartialEq + Eq + Copy + Hash> Graph<T> {
 
     pub fn add_node(&mut self, value: T) -> u32 {
         let new_node = Node { value };
-        let existing = self.nodes.iter().filter(|(_, node)| **node == new_node).map(|(id, _)| *id).collect::<Vec<_>>();
+        let existing = self
+            .nodes
+            .iter()
+            .filter(|(_, node)| **node == new_node)
+            .map(|(id, _)| *id)
+            .collect::<Vec<_>>();
         if existing.is_empty() {
             let id = self.current_node_id;
             self.current_node_id += 1;
@@ -54,18 +59,29 @@ impl<T: PartialEq + Eq + Copy + Hash> Graph<T> {
     }
 
     pub fn add_edge(&mut self, source: u32, target: u32, weight: u64) -> Edge {
-        let new_edge = Edge { source, target, weight };
-        self.edges.entry(source).or_insert_with(HashSet::new).insert(new_edge.clone());
+        let new_edge = Edge {
+            source,
+            target,
+            weight,
+        };
+        self.edges
+            .entry(source)
+            .or_default()
+            .insert(new_edge);
         new_edge
     }
 
     pub fn add_simple_edge(&mut self, source: u32, target: u32) {
-        self.simple_edges.entry(source).or_insert_with(HashSet::new).insert(target);
+        self.simple_edges
+            .entry(source)
+            .or_default()
+            .insert(target);
     }
 
     pub fn dijkstra(&self, start_node: u32) -> (HashMap<u32, u64>, HashMap<u32, Vec<u32>>) {
         let mut result: HashMap<u32, u64> = self.nodes.keys().map(|&id| (id, u64::MAX)).collect();
-        let mut predecessors: HashMap<u32, Vec<u32>> = self.nodes.keys().map(|&id| (id, vec![])).collect();
+        let mut predecessors: HashMap<u32, Vec<u32>> =
+            self.nodes.keys().map(|&id| (id, vec![])).collect();
         let mut heap = BinaryHeap::new();
         heap.push((Reverse(0u64), start_node));
 
@@ -80,7 +96,11 @@ impl<T: PartialEq + Eq + Copy + Hash> Graph<T> {
                 for edge in neighbors {
                     let new_dist: u64 = current_dist.saturating_add(edge.weight);
 
-                    if new_dist < *result.get(&edge.target).expect(format!("Error getting result for {}", edge.target).as_str()) {
+                    if new_dist
+                        < *result
+                            .get(&edge.target)
+                            .unwrap_or_else(|| panic!("Error getting result for {}", edge.target))
+                    {
                         result.insert(edge.target, new_dist);
                         predecessors.get_mut(&edge.target).unwrap().push(node);
                         heap.push((Reverse(new_dist), edge.target));
@@ -96,10 +116,15 @@ impl<T: PartialEq + Eq + Copy + Hash> Graph<T> {
         self.nodes.get(&node_id)
     }
 
-    pub fn get_nodes(&self) -> &HashMap<u32, Node<T>> { &self.nodes }
+    pub fn get_nodes(&self) -> &HashMap<u32, Node<T>> {
+        &self.nodes
+    }
 
     pub fn find_node(&self, value: T) -> Option<u32> {
-        self.nodes.iter().find(|(_, v)| **v == Node { value }).map(|(k, _)| *k)
+        self.nodes
+            .iter()
+            .find(|(_, v)| **v == Node { value })
+            .map(|(k, _)| *k)
     }
 
     pub fn remove_node(&mut self, node_id: u32) {

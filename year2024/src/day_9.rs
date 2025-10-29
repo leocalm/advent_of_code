@@ -1,7 +1,7 @@
-use std::error::Error;
-use std::path::PathBuf;
 use common::base_day::BaseDay;
 use common::file::get_input_path;
+use std::error::Error;
+use std::path::PathBuf;
 
 #[derive(Debug, Clone, Copy, Ord, Eq, PartialOrd, PartialEq)]
 struct Block {
@@ -30,18 +30,29 @@ impl Day9 {
 
         for (index, value) in input.iter().enumerate() {
             if index % 2 == 0 {
-                self.disc.push(Block { id: Some(current_id), size: *value });
+                self.disc.push(Block {
+                    id: Some(current_id),
+                    size: *value,
+                });
                 current_id += 1;
             } else {
                 if *value > 0 {
-                    self.disc.push(Block { id: None, size: *value });
+                    self.disc.push(Block {
+                        id: None,
+                        size: *value,
+                    });
                 }
             }
         }
     }
 
     fn find_first_free_block(&mut self) -> (usize, Block) {
-        self.disc.clone().into_iter().enumerate().find(|(_, block)| block.id.is_none()).unwrap()
+        self.disc
+            .clone()
+            .into_iter()
+            .enumerate()
+            .find(|(_, block)| block.id.is_none())
+            .unwrap()
     }
 
     fn move_block(&mut self) -> bool {
@@ -78,11 +89,19 @@ impl Day9 {
             self.disc.push(Block { id: None, size: 1 });
         }
 
-        if first_free_block.0 > 0 && self.disc.get(first_free_block.0 - 1).unwrap().id == last_block.id {
+        if first_free_block.0 > 0
+            && self.disc.get(first_free_block.0 - 1).unwrap().id == last_block.id
+        {
             let block = self.disc.get_mut(first_free_block.0 - 1).unwrap();
             block.size += 1;
         } else {
-            self.disc.insert(first_free_block.0, Block { id: last_block.id, size: 1 });
+            self.disc.insert(
+                first_free_block.0,
+                Block {
+                    id: last_block.id,
+                    size: 1,
+                },
+            );
         }
 
         true
@@ -108,7 +127,13 @@ impl Day9 {
 
         if free_space.is_some() && free_space.unwrap().0 < index {
             self.disc.remove(last_file.0);
-            self.disc.insert(last_file.0, Block { id: None, size: last_file.1.size });
+            self.disc.insert(
+                last_file.0,
+                Block {
+                    id: None,
+                    size: last_file.1.size,
+                },
+            );
 
             if free_space.unwrap().1.size == last_file.1.size {
                 self.disc.remove(free_space.unwrap().0);
@@ -147,11 +172,18 @@ impl Day9 {
 }
 
 impl BaseDay for Day9 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let data = self.read_file_into_vec_of_vec();
-        let input = data.get(0).unwrap().iter().map(|x| x.to_digit(10).unwrap() as u32).collect::<Vec<u32>>();
+        let input = data
+            .get(0)
+            .unwrap()
+            .iter()
+            .map(|x| x.to_digit(10).unwrap() as u32)
+            .collect::<Vec<u32>>();
 
         self.read_input_into_disk(&input);
         while self.move_block() {}
@@ -161,11 +193,16 @@ impl BaseDay for Day9 {
 
     fn part_2(&mut self) -> Result<String, Box<dyn Error>> {
         let data = self.read_file_into_vec_of_vec();
-        let input = data.get(0).unwrap().iter().map(|x| x.to_digit(10).unwrap() as u32).collect::<Vec<u32>>();
+        let input = data
+            .get(0)
+            .unwrap()
+            .iter()
+            .map(|x| x.to_digit(10).unwrap() as u32)
+            .collect::<Vec<u32>>();
 
         self.read_input_into_disk(&input);
         for block in self.disc.clone().iter().rev() {
-            let mut index= 0;
+            let mut index = 0;
             for b in self.disc.iter() {
                 if b.id.is_some() && block.id.is_some() {
                     if b.id.unwrap() == block.id.unwrap() {

@@ -1,11 +1,11 @@
-use std::error::Error;
-use std::path::PathBuf;
 use common::base_day::BaseDay;
-use common::graph::Graph;
-use common::grid::{Grid, Point};
 use common::dsu::DSU;
 use common::file::get_input_path;
+use common::graph::Graph;
+use common::grid::{Grid, Point};
 use common::utils::{add_corners, add_edges_to_graph};
+use std::error::Error;
+use std::path::PathBuf;
 
 const NODE_SYMBOL: char = '.';
 const WALL_SYMBOL: char = '#';
@@ -28,13 +28,19 @@ impl Day18 {
     }
 
     fn split_input(&self, line: &String) -> (i32, i32) {
-        let _s = line.split(',').map(|x| x.parse::<i32>().unwrap()).rev().collect::<Vec<i32>>();
+        let _s = line
+            .split(',')
+            .map(|x| x.parse::<i32>().unwrap())
+            .rev()
+            .collect::<Vec<i32>>();
         (_s[0], _s[1])
     }
 }
 
 impl BaseDay for Day18 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let input = self.read_file_into_vec();
@@ -54,7 +60,10 @@ impl BaseDay for Day18 {
         let mut graph = Graph::new();
 
         let start_node = graph.add_node(Point { x: 0, y: 0 });
-        let end_node = graph.add_node(Point { x: self.grid_size, y: self.grid_size });
+        let end_node = graph.add_node(Point {
+            x: self.grid_size,
+            y: self.grid_size,
+        });
 
         add_corners(&grid, &mut graph, NODE_SYMBOL);
         add_edges_to_graph(&grid, &mut graph, WALL_SYMBOL);
@@ -68,7 +77,10 @@ impl BaseDay for Day18 {
         let mut walls = Vec::new();
         let mut nodes = vec![];
         let start_point = Point { x: 0, y: 0 };
-        let end_point = Point { x: self.grid_size, y: self.grid_size };
+        let end_point = Point {
+            x: self.grid_size,
+            y: self.grid_size,
+        };
 
         for line in &input {
             let (x, y) = self.split_input(&line);
@@ -91,7 +103,10 @@ impl BaseDay for Day18 {
                     continue;
                 }
                 for diffs in vec![(0, 1), (1, 0)] {
-                    let other = Point { x: x + diffs.0, y: y + diffs.1 };
+                    let other = Point {
+                        x: x + diffs.0,
+                        y: y + diffs.1,
+                    };
                     if dsu.find(other).is_some() {
                         dsu.union(current_node, other);
                     }
@@ -108,7 +123,10 @@ impl BaseDay for Day18 {
                         continue;
                     }
                     for diffs in vec![(0, 1), (1, 0)] {
-                        let other = Point { x: x + diffs.0, y: y + diffs.1 };
+                        let other = Point {
+                            x: x + diffs.0,
+                            y: y + diffs.1,
+                        };
                         if dsu.find(other).is_some() {
                             dsu.union(current_node, other);
                         }
@@ -183,4 +201,3 @@ mod tests {
         assert_eq!(expected, result.unwrap());
     }
 }
-                

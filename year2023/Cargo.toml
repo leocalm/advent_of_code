@@ -11,3 +11,7 @@ clap = { version = "4.5.49", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 common = { path = "../common" }
 regex = "1.12.2"
+
+[dev-dependencies]
+rstest = "0.26.1"
+

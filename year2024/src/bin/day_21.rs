@@ -1,9 +1,9 @@
-use std::collections::HashMap;
-use std::path::PathBuf;
-use log::info;
 use common::base_day::BaseDay;
 use common::file::get_input_path;
 use common::utils::{init_logger, manhattan_distance};
+use log::info;
+use std::collections::HashMap;
+use std::path::PathBuf;
 
 const NUMERIC: [char; 12] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', ' '];
 const NUMERIC_KEYPAD: [[char; 3]; 4] = [
@@ -22,18 +22,18 @@ fn numeric_part(sequence: &str) -> u64 {
 
 fn numeric_keypad() -> HashMap<char, (i32, i32)> {
     HashMap::from([
-        ('7', (0,0)),
-        ('8', (0,1)),
-        ('9', (0,2)),
-        ('4', (1,0)),
-        ('5', (1,1)),
-        ('6', (1,2)),
-        ('1', (2,0)),
-        ('2', (2,1)),
-        ('3', (2,2)),
-        (' ', (3,0)),
-        ('0', (3,1)),
-        ('A', (3,2)),
+        ('7', (0, 0)),
+        ('8', (0, 1)),
+        ('9', (0, 2)),
+        ('4', (1, 0)),
+        ('5', (1, 1)),
+        ('6', (1, 2)),
+        ('1', (2, 0)),
+        ('2', (2, 1)),
+        ('3', (2, 2)),
+        (' ', (3, 0)),
+        ('0', (3, 1)),
+        ('A', (3, 2)),
     ])
 }
 
@@ -77,8 +77,10 @@ impl NumericKeypad {
             } else if from_coordinates.1 > to_coordinates.1 {
                 let mut result = Vec::new();
 
-                let from_n1 = NUMERIC_KEYPAD[(from_coordinates.0 - 1) as usize][from_coordinates.1 as usize];
-                let from_n2 = NUMERIC_KEYPAD[from_coordinates.0 as usize][(from_coordinates.1 - 1) as usize];
+                let from_n1 =
+                    NUMERIC_KEYPAD[(from_coordinates.0 - 1) as usize][from_coordinates.1 as usize];
+                let from_n2 =
+                    NUMERIC_KEYPAD[from_coordinates.0 as usize][(from_coordinates.1 - 1) as usize];
 
                 for n in self.distance_numeric(from_n1, to) {
                     let mut tmp_result = vec!['^'];
@@ -96,8 +98,10 @@ impl NumericKeypad {
             } else {
                 let mut result = Vec::new();
 
-                let from_n1 = NUMERIC_KEYPAD[(from_coordinates.0 - 1) as usize][from_coordinates.1 as usize];
-                let from_n2 = NUMERIC_KEYPAD[from_coordinates.0 as usize][(from_coordinates.1 + 1) as usize];
+                let from_n1 =
+                    NUMERIC_KEYPAD[(from_coordinates.0 - 1) as usize][from_coordinates.1 as usize];
+                let from_n2 =
+                    NUMERIC_KEYPAD[from_coordinates.0 as usize][(from_coordinates.1 + 1) as usize];
                 for n in self.distance_numeric(from_n1, to) {
                     let mut tmp_result = vec!['^'];
                     tmp_result.extend(n);
@@ -118,8 +122,10 @@ impl NumericKeypad {
             } else if from_coordinates.1 > to_coordinates.1 {
                 let mut result = Vec::new();
 
-                let from_n1 = NUMERIC_KEYPAD[(from_coordinates.0 + 1) as usize][from_coordinates.1 as usize];
-                let from_n2 = NUMERIC_KEYPAD[from_coordinates.0 as usize][(from_coordinates.1 - 1) as usize];
+                let from_n1 =
+                    NUMERIC_KEYPAD[(from_coordinates.0 + 1) as usize][from_coordinates.1 as usize];
+                let from_n2 =
+                    NUMERIC_KEYPAD[from_coordinates.0 as usize][(from_coordinates.1 - 1) as usize];
                 for n in self.distance_numeric(from_n1, to) {
                     let mut tmp_result = vec!['v'];
                     tmp_result.extend(n);
@@ -136,8 +142,10 @@ impl NumericKeypad {
             } else {
                 let mut result = Vec::new();
 
-                let from_n1 = NUMERIC_KEYPAD[(from_coordinates.0 + 1) as usize][from_coordinates.1 as usize];
-                let from_n2 = NUMERIC_KEYPAD[from_coordinates.0 as usize][(from_coordinates.1 + 1) as usize];
+                let from_n1 =
+                    NUMERIC_KEYPAD[(from_coordinates.0 + 1) as usize][from_coordinates.1 as usize];
+                let from_n2 =
+                    NUMERIC_KEYPAD[from_coordinates.0 as usize][(from_coordinates.1 + 1) as usize];
                 for n in self.distance_numeric(from_n1, to) {
                     let mut tmp_result = vec!['v'];
                     tmp_result.extend(n);
@@ -187,7 +195,6 @@ impl NumericKeypad {
                         r.push('A');
                         new_result.push(r);
                     }
-
                 }
                 result = new_result;
             }
@@ -213,25 +220,43 @@ impl Day21 {
                 (('A', 'A', 0), vec![(0, String::new())]),
                 (('A', '^', 0), vec![(1, String::from("<"))]),
                 (('A', '>', 0), vec![(1, String::from("v"))]),
-                (('A', 'v', 0), vec![(2, String::from("v<")), (2, String::from("<v"))]),
-                (('A', '<', 0), vec![(3, String::from("v<<")), (3, String::from("<v<"))]),
+                (
+                    ('A', 'v', 0),
+                    vec![(2, String::from("v<")), (2, String::from("<v"))],
+                ),
+                (
+                    ('A', '<', 0),
+                    vec![(3, String::from("v<<")), (3, String::from("<v<"))],
+                ),
                 (('^', 'A', 0), vec![(1, String::from(">"))]),
                 (('^', '^', 0), vec![(0, String::new())]),
-                (('^', '>', 0), vec![(2, String::from("v>")), (2, String::from(">v"))]),
+                (
+                    ('^', '>', 0),
+                    vec![(2, String::from("v>")), (2, String::from(">v"))],
+                ),
                 (('^', 'v', 0), vec![(1, String::from("v"))]),
                 (('^', '<', 0), vec![(2, String::from("v<"))]),
-                (('<', 'A', 0), vec![(3, String::from(">>^")), (3, String::from(">^>"))]),
+                (
+                    ('<', 'A', 0),
+                    vec![(3, String::from(">>^")), (3, String::from(">^>"))],
+                ),
                 (('<', '^', 0), vec![(2, String::from(">^"))]),
                 (('<', '>', 0), vec![(2, String::from(">>"))]),
                 (('<', 'v', 0), vec![(1, String::from(">"))]),
                 (('<', '<', 0), vec![(0, String::new())]),
-                (('v', 'A', 0), vec![(2, String::from(">^")), (2,String::from("^>"))]),
+                (
+                    ('v', 'A', 0),
+                    vec![(2, String::from(">^")), (2, String::from("^>"))],
+                ),
                 (('v', '^', 0), vec![(1, String::from("^"))]),
                 (('v', '>', 0), vec![(1, String::from(">"))]),
                 (('v', 'v', 0), vec![(0, String::new())]),
                 (('v', '<', 0), vec![(1, String::from("<"))]),
                 (('>', 'A', 0), vec![(1, String::from("^"))]),
-                (('>', '^', 0), vec![(2, String::from("^<")), (2, String::from("<^"))]),
+                (
+                    ('>', '^', 0),
+                    vec![(2, String::from("^<")), (2, String::from("<^"))],
+                ),
                 (('>', '>', 0), vec![(0, String::new())]),
                 (('>', 'v', 0), vec![(1, String::from("<"))]),
                 (('>', '<', 0), vec![(2, String::from("<<"))]),
@@ -244,7 +269,14 @@ impl Day21 {
 
     fn sequences(&self, keys: &[char], index: usize) -> Vec<Vec<char>> {
         let mut result = Vec::new();
-        fn build_seq(keys: &[char], index: usize, prev_key: char, current_path: &Vec<char>, result: &mut Vec<Vec<char>>, cache: &HashMap<DistanceKey, DistanceVal>) {
+        fn build_seq(
+            keys: &[char],
+            index: usize,
+            prev_key: char,
+            current_path: &Vec<char>,
+            result: &mut Vec<Vec<char>>,
+            cache: &HashMap<DistanceKey, DistanceVal>,
+        ) {
             if index == keys.len() {
                 result.push(current_path.clone());
                 return;
@@ -254,11 +286,18 @@ impl Day21 {
                 let mut new_path = current_path.clone();
                 new_path.extend(path.1.chars());
                 new_path.push('A');
-                build_seq(keys, index+1, keys[index], &new_path, result, cache);
+                build_seq(keys, index + 1, keys[index], &new_path, result, cache);
             }
         }
 
-        build_seq(keys, index, keys[(index as i32 - 1) as usize], &Vec::new(), &mut result, &self.sequences);
+        build_seq(
+            keys,
+            index,
+            keys[(index as i32 - 1) as usize],
+            &Vec::new(),
+            &mut result,
+            &self.sequences,
+        );
         result
     }
 
@@ -299,7 +338,7 @@ impl Day21 {
         total
     }
 
-    fn solve(&mut self, keys: &str, depth: usize ) -> u64 {
+    fn solve(&mut self, keys: &str, depth: usize) -> u64 {
         let sequences = self.numeric_keypad.numeric_to_directional(keys);
         let mut min = u64::MAX;
         for seq in sequences {
@@ -314,7 +353,9 @@ impl Day21 {
 }
 
 impl BaseDay for Day21 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn std::error::Error>> {
         let robots = 2;
@@ -359,14 +400,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 #[cfg(test)]
 mod test {
-    use std::path::Path;
     use super::*;
+    use std::path::Path;
 
     #[test]
     fn part_1_test() {
         let expected = 126_384.to_string();
 
-        let project_root = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap().to_path_buf();
+        let project_root = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .unwrap()
+            .to_path_buf();
         let mut day = Day21::new();
         let path = project_root.join("data/2024/day_21/example_1.txt");
         day.file_path = path;
@@ -381,7 +425,10 @@ mod test {
     fn part_2_test() {
         let expected = 154_115_708_116_294u64.to_string();
 
-        let project_root = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap().to_path_buf();
+        let project_root = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .unwrap()
+            .to_path_buf();
         let mut day = Day21::new();
         let path = project_root.join("data/2024/day_21/example_1.txt");
         day.file_path = path;
@@ -400,7 +447,8 @@ mod test {
             vec!['v', '<', '<', 'A', '>', '>', '^', 'A'],
             vec!['v', '<', '<', 'A', '>', '^', '>', 'A'],
             vec!['<', 'v', '<', 'A', '>', '>', '^', 'A'],
-            vec!['<', 'v', '<', 'A', '>', '^', '>', 'A']];
+            vec!['<', 'v', '<', 'A', '>', '^', '>', 'A'],
+        ];
         let result = day.sequences(&vec!['A', '<', 'A'], 1);
         assert_eq!(expected, result);
     }

@@ -1,9 +1,9 @@
+use common::base_day::BaseDay;
+use common::file::get_input_path;
+use common::utils::init_logger;
+use log::info;
 use std::error::Error;
 use std::path::PathBuf;
-use log::info;
-use common::base_day::BaseDay;
-use common::utils::init_logger;
-use common::file::get_input_path;
 
 pub struct Day16 {
     day_number: u32,

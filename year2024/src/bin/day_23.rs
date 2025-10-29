@@ -1,12 +1,12 @@
-use std::collections::{HashMap, HashSet};
-use std::error::Error;
-use std::path::PathBuf;
-use itertools::Itertools;
-use log::info;
 use common::base_day::BaseDay;
 use common::file::get_input_path;
 use common::graph::Graph;
 use common::test_utils::init_logger;
+use itertools::Itertools;
+use log::info;
+use std::collections::{HashMap, HashSet};
+use std::error::Error;
+use std::path::PathBuf;
 
 pub struct Day23 {
     day_number: u32,
@@ -25,7 +25,9 @@ impl Day23 {
 }
 
 impl BaseDay for Day23 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let mut result = 0;
@@ -39,9 +41,13 @@ impl BaseDay for Day23 {
             let n2 = self.graph.simple_edges.get(n2_id).unwrap();
             let n3 = self.graph.simple_edges.get(n3_id).unwrap();
 
-            if n2.contains(&n1_id) && n3.contains(&n1_id) &&
-                n1.contains(&n2_id) && n3.contains(&n2_id) &&
-                n1.contains(&n3_id) && n2.contains(&n3_id) {
+            if n2.contains(&n1_id)
+                && n3.contains(&n1_id)
+                && n1.contains(&n2_id)
+                && n3.contains(&n2_id)
+                && n1.contains(&n3_id)
+                && n2.contains(&n3_id)
+            {
                 if node_1.value[0] == 't' || node_2.value[0] == 't' || node_3.value[0] == 't' {
                     result += 1;
                 }
@@ -85,8 +91,12 @@ impl BaseDay for Day23 {
                 computer_2_key
             };
 
-            g.entry(computer_1_key).or_insert_with(HashSet::new).insert(computer_2_key);
-            g.entry(computer_2_key).or_insert_with(HashSet::new).insert(computer_1_key);
+            g.entry(computer_1_key)
+                .or_insert_with(HashSet::new)
+                .insert(computer_2_key);
+            g.entry(computer_2_key)
+                .or_insert_with(HashSet::new)
+                .insert(computer_1_key);
 
             p.insert(computer_1_key);
             p.insert(computer_2_key);
@@ -145,8 +155,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod test {
-    use common::file::get_data_dir;
     use super::*;
+    use common::file::get_data_dir;
     use common::test_utils::init_logger;
 
     #[test]
@@ -185,4 +195,3 @@ mod test {
         Ok(())
     }
 }
-                

@@ -1,9 +1,9 @@
-use std::collections::HashSet;
-use std::error::Error;
-use std::path::PathBuf;
 use common::base_day::BaseDay;
 use common::file::get_input_path;
 use common::grid::{Grid, Point};
+use std::collections::HashSet;
+use std::error::Error;
+use std::path::PathBuf;
 
 #[derive(Debug, Clone, Ord, Eq, PartialOrd, PartialEq)]
 struct Node {
@@ -20,7 +20,7 @@ impl Day10 {
     pub fn new() -> Day10 {
         Day10 {
             day_number: 10,
-            file_path: get_input_path(2024, 10)
+            file_path: get_input_path(2024, 10),
         }
     }
 
@@ -49,7 +49,11 @@ impl Day10 {
         let possible_moves = vec![(-1, 0), (1, 0), (0, -1), (0, 1)];
         for possible_move in possible_moves {
             let new_coordinates = node_coordinates.add(possible_move.0, possible_move.1);
-            if new_coordinates.x >= 0 && new_coordinates.y >= 0 && new_coordinates.x < grid.rows() && new_coordinates.y < grid.cols() {
+            if new_coordinates.x >= 0
+                && new_coordinates.y >= 0
+                && new_coordinates.x < grid.rows()
+                && new_coordinates.y < grid.cols()
+            {
                 let coordinates = new_coordinates;
                 let value = grid.get(coordinates).unwrap();
                 if value.to_digit(10).is_some_and(|x| x == current_value + 1) {
@@ -66,7 +70,9 @@ impl Day10 {
 }
 
 impl BaseDay for Day10 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let mut result: u64 = 0;
@@ -114,4 +120,3 @@ impl BaseDay for Day10 {
         self.file_path.clone()
     }
 }
-                

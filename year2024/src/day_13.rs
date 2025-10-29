@@ -1,14 +1,18 @@
-use std::error::Error;
-use std::path::PathBuf;
 use common::base_day::BaseDay;
 use common::file::get_input_path;
+use std::error::Error;
+use std::path::PathBuf;
 
 pub struct Day13 {
     file_path: PathBuf,
 }
 
 impl Day13 {
-    pub fn new() -> Self { Day13 { file_path: get_input_path(2024, 13) } }
+    pub fn new() -> Self {
+        Day13 {
+            file_path: get_input_path(2024, 13),
+        }
+    }
 
     // Extended Euclidean algorithm: returns (gcd, x, y) such that a*x + b*y = gcd
     fn extended_gcd(a: i128, b: i128) -> (i128, i128, i128) {
@@ -24,7 +28,15 @@ impl Day13 {
     // dx1 * a + dx2 * b = px
     // dy1 * a + dy2 * b = py
     // Returns Some(min_tokens) if solution exists with a,b >=0
-    fn min_tokens(&self, dx1: i128, dy1: i128, dx2: i128, dy2: i128, px: i128, py: i128) -> Option<i128> {
+    fn min_tokens(
+        &self,
+        dx1: i128,
+        dy1: i128,
+        dx2: i128,
+        dy2: i128,
+        px: i128,
+        py: i128,
+    ) -> Option<i128> {
         // Solve first equation dx1*a + dx2*b = px
         let (g, x0, y0) = Self::extended_gcd(dx1, dx2);
         if px % g != 0 {
@@ -54,7 +66,7 @@ impl Day13 {
                 let k = k_min;
                 a0 += k * kx;
                 b0 -= k * ky;
-                return Some(3*a0 + b0);
+                return Some(3 * a0 + b0);
             }
         }
 
@@ -69,12 +81,14 @@ impl Day13 {
         if a < 0 || b < 0 {
             return None;
         }
-        Some(3*a + b)
+        Some(3 * a + b)
     }
 }
 
 impl BaseDay for Day13 {
-    fn get_day_number(&self) -> u32 { 13 }
+    fn get_day_number(&self) -> u32 {
+        13
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         Ok(String::new())
@@ -82,7 +96,8 @@ impl BaseDay for Day13 {
 
     fn part_2(&mut self) -> Result<String, Box<dyn Error>> {
         // Remove empty lines
-        let lines: Vec<String> = self.read_file_into_vec()
+        let lines: Vec<String> = self
+            .read_file_into_vec()
             .into_iter()
             .filter(|line| !line.trim().is_empty())
             .collect();
@@ -90,7 +105,9 @@ impl BaseDay for Day13 {
         let mut total_tokens: i128 = 0;
 
         for chunk in lines.chunks(3) {
-            if chunk.len() < 3 { continue; } // skip incomplete chunks
+            if chunk.len() < 3 {
+                continue;
+            } // skip incomplete chunks
 
             let parse = |s: &String| {
                 s.split(|c| c == '=' || c == '+' || c == ',')
@@ -103,7 +120,9 @@ impl BaseDay for Day13 {
             let p = parse(&chunk[2]); // [px, py]
 
             // Skip if parsing failed
-            if a.len() < 2 || b.len() < 2 || p.len() < 2 { continue; }
+            if a.len() < 2 || b.len() < 2 || p.len() < 2 {
+                continue;
+            }
 
             // Part 2: add 10_000_000_000_000
             let px = p[0] + 10_000_000_000_000;

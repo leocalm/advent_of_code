@@ -1,10 +1,10 @@
+use common::base_day::BaseDay;
+use common::file::get_input_path;
+use common::utils::init_logger;
+use log::{info, warn};
 use std::error::Error;
 use std::path::PathBuf;
 use std::u32;
-use log::{info, warn};
-use common::base_day::BaseDay;
-use common::utils::init_logger;
-use common::file::get_input_path;
 
 const MAX_RED: u32 = 12;
 const MAX_GREEN: u32 = 13;
@@ -66,31 +66,37 @@ impl Day2 {
                 "red" => red_count += count,
                 "green" => green_count += count,
                 "blue" => blue_count += count,
-                _ => unreachable!()
+                other => return Err(format!("Unexpected color '{}'", other).into()),
             }
         }
 
-        Ok(Draw{ red_count, green_count, blue_count })
+        Ok(Draw {
+            red_count,
+            green_count,
+            blue_count,
+        })
     }
 
     fn parse_game_line(&self, line: &str) -> Result<Game, Box<dyn Error>> {
-        let split = line.split_once(": ");
-        if split.is_none() {
+        let Some((game_info, game_data)) = line.split_once(": ") else {
             warn!("Line '{}' is not valid, skipping.", line);
-            Err("Invalid line, couldn't get the game info".into())
-        } else {
-            let (game_info, game_data) = split.unwrap();
-            let game_id = game_info.split_whitespace().nth(1).unwrap().parse()?;
+            return Err("Invalid line format".into());
+        };
+        let game_id = game_info
+            .split_whitespace()
+            .nth(1)
+            .ok_or("Missing game id")?
+            .parse()?;
 
-            let game = Game {
-                game_id,
-                draws: game_data.split("; ").map(|combination| {
-                    self.process_game_combination(combination)
-                }).collect::<Result<Vec<Draw>, Box<dyn Error>>>()?,
-            };
+        let game = Game {
+            game_id,
+            draws: game_data
+                .split("; ")
+                .map(|combination| self.process_game_combination(combination))
+                .collect::<Result<Vec<Draw>, Box<dyn Error>>>()?,
+        };
 
-            Ok(game)
-        }
+        Ok(game)
     }
 }
 
@@ -100,30 +106,24 @@ impl BaseDay for Day2 {
     }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
-        let input = self.read_file_into_vec();
-        let mut valid_game_ids_sum= 0u32;
-
-        for line in input {
-            let game = self.parse_game_line(&line)?;
-            if game.is_valid() {
-                valid_game_ids_sum += game.game_id;
-            }
-        }
-
-        Ok(valid_game_ids_sum.to_string())
+        Ok(self
+            .read_file_into_vec()
+            .iter()
+            .filter_map(|line| self.parse_game_line(line).ok())
+            .filter(|game| game.is_valid())
+            .map(|game| game.game_id)
+            .sum::<u32>()
+            .to_string())
     }
 
     fn part_2(&mut self) -> Result<String, Box<dyn Error>> {
-        let input = self.read_file_into_vec();
-        let mut games_power_sum= 0u32;
-
-        for line in input {
-            let game = self.parse_game_line(&line)?;
-            games_power_sum += game.power();
-            
-        }
-
-        Ok(games_power_sum.to_string())
+        Ok(self
+            .read_file_into_vec()
+            .iter()
+            .filter_map(|line| self.parse_game_line(line).ok())
+            .map(|game| game.power())
+            .sum::<u32>()
+            .to_string())
     }
 
     fn get_input_file_path(&self) -> PathBuf {
@@ -148,9 +148,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 #[cfg(test)]
 mod tests {
-    use common::file::get_data_dir;
-
     use super::*;
+
+    use common::file::get_data_dir;
+    use rstest::rstest;
 
     #[test]
     fn test_part_1() -> Result<(), Box<dyn Error>> {
@@ -176,5 +177,20 @@ mod tests {
         assert_eq!(result, expected);
 
         Ok(())
+    }
+
+    #[rstest]
+    #[case((10, 10, 10), true)]
+    #[case((40, 10, 10), false)]
+    #[case((10, 40, 10), false)]
+    #[case((10, 10, 40), false)]
+    #[case((40, 40, 40), false)]
+    fn is_valid_test(#[case] input: (u32, u32, u32), #[case] expected: bool) {
+        let draw = Draw {
+            red_count: input.0,
+            green_count: input.1,
+            blue_count: input.2,
+        };
+        assert_eq!(draw.is_valid(), expected);
     }
 }

@@ -1,9 +1,9 @@
+use common::base_day::BaseDay;
+use common::file::get_input_path;
+use itertools::Itertools;
 use std::collections::{HashMap, HashSet};
 use std::error::Error;
 use std::path::PathBuf;
-use itertools::Itertools;
-use common::base_day::BaseDay;
-use common::file::get_input_path;
 
 pub struct Day19 {
     day_number: u32,
@@ -22,7 +22,12 @@ impl Day19 {
         }
     }
 
-    fn find_valid_chunks(&self, line: &str, size: usize, available_towels: &Vec<String>) -> Vec<String> {
+    fn find_valid_chunks(
+        &self,
+        line: &str,
+        size: usize,
+        available_towels: &Vec<String>,
+    ) -> Vec<String> {
         let mut result = Vec::new();
         for index in 0..line.len() - size + 1 {
             let _s = line[index..(index + size)].to_string();
@@ -76,21 +81,26 @@ impl Day19 {
 }
 
 impl BaseDay for Day19 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let mut result = 0;
 
         let input = self.read_file_into_vec();
-        let available_towels = input.get(0).unwrap().split(", ").map(|t| t.to_string()).collect::<Vec<String>>();
+        let available_towels = input
+            .get(0)
+            .unwrap()
+            .split(", ")
+            .map(|t| t.to_string())
+            .collect::<Vec<String>>();
         let mut towels_by_size = HashMap::new();
         for towel in available_towels.iter() {
             let entry = towels_by_size.entry(towel.len()).or_insert(Vec::new());
             entry.push(towel);
         }
         for line in input[2..input.len()].iter() {
-
-
             let mut possible = HashSet::new();
             for size in towels_by_size.keys().sorted() {
                 let bla = self.find_valid_chunks(line, *size, &available_towels);
@@ -107,7 +117,12 @@ impl BaseDay for Day19 {
         let mut result = 0;
 
         let input = self.read_file_into_vec();
-        let available_towels = input.get(0).unwrap().split(", ").map(|t| t.to_string()).collect::<Vec<String>>();
+        let available_towels = input
+            .get(0)
+            .unwrap()
+            .split(", ")
+            .map(|t| t.to_string())
+            .collect::<Vec<String>>();
         let mut towels_by_size = HashMap::new();
         for towel in available_towels.iter() {
             let entry = towels_by_size.entry(towel.len()).or_insert(Vec::new());
@@ -177,7 +192,12 @@ mod tests {
     fn rebuild_string_test() {
         let mut day = Day19::new();
         let target = "brabwurr";
-        let possible_combinations = HashSet::from_iter(vec!["bwu", "b", "r", "ab", "br", "wu"].iter().map(|s| s.to_string()).collect::<Vec<String>>());
+        let possible_combinations = HashSet::from_iter(
+            vec!["bwu", "b", "r", "ab", "br", "wu"]
+                .iter()
+                .map(|s| s.to_string())
+                .collect::<Vec<String>>(),
+        );
 
         let result = day.can_build(target, &possible_combinations);
         assert_eq!(result, true);
@@ -187,7 +207,12 @@ mod tests {
     fn rebuild_string_test_2() {
         let mut day = Day19::new();
         let target = "bbrgwb";
-        let possible_combinations = HashSet::from_iter(vec!["r", "b", "g", "br"].iter().map(|s| s.to_string()).collect::<Vec<String>>());
+        let possible_combinations = HashSet::from_iter(
+            vec!["r", "b", "g", "br"]
+                .iter()
+                .map(|s| s.to_string())
+                .collect::<Vec<String>>(),
+        );
 
         let result = day.can_build(target, &possible_combinations);
         println!("data: {:?}", day.data_bool);

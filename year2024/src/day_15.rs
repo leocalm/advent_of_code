@@ -1,10 +1,10 @@
+use common::base_day::BaseDay;
+use common::file::get_input_path;
+use common::grid::{Grid, Point};
+use log::debug;
 use std::collections::HashMap;
 use std::error::Error;
 use std::path::PathBuf;
-use common::grid::{Grid, Point};
-use log::debug;
-use common::base_day::BaseDay;
-use common::file::get_input_path;
 
 pub struct Day15 {
     day_number: u32,
@@ -39,8 +39,17 @@ impl Day15 {
         (grid, instructions)
     }
 
-    fn move_object_2(&self, grid: &mut Grid<char>, current_position: Point, instruction: char, walls: &Vec<Point>) -> HashMap<Point, char> {
-        debug!("current_position: {:?}, instruction {:?}", current_position, instruction);
+    fn move_object_2(
+        &self,
+        grid: &mut Grid<char>,
+        current_position: Point,
+        instruction: char,
+        walls: &Vec<Point>,
+    ) -> HashMap<Point, char> {
+        debug!(
+            "current_position: {:?}, instruction {:?}",
+            current_position, instruction
+        );
         let mut operations = HashMap::new();
 
         let current_symbol = *grid.get(current_position).unwrap();
@@ -50,7 +59,7 @@ impl Day15 {
             'v' => (1, 0),
             '<' => (0, -1),
             '>' => (0, 1),
-            _ => (0, 0)
+            _ => (0, 0),
         };
         position = position.add(diff.0, diff.1);
         let value = *grid.get(position).unwrap();
@@ -116,7 +125,10 @@ impl Day15 {
                     return HashMap::new();
                 }
 
-                debug!("operations_1, {:?}, operations_2: {:?}", operations_1, operations_2);
+                debug!(
+                    "operations_1, {:?}, operations_2: {:?}",
+                    operations_1, operations_2
+                );
                 if operations_1.is_empty() || operations_2.is_empty() {
                     debug!("Hit a wall at position_2 {:?}, not moving!", position);
                     return HashMap::new();
@@ -128,7 +140,13 @@ impl Day15 {
                 for (k_1, v_1) in operations_1.iter() {
                     for (k_2, v_2) in operations_2.iter() {
                         if k_1 == k_2 {
-                            debug!("k_1: {:?}, v1:{:?}, k_2: {:?}, v2: {:?}", k_1, operations_1.get(k_1), k_2, operations_2.get(k_2));
+                            debug!(
+                                "k_1: {:?}, v1:{:?}, k_2: {:?}, v2: {:?}",
+                                k_1,
+                                operations_1.get(k_1),
+                                k_2,
+                                operations_2.get(k_2)
+                            );
                             if *v_1 != *v_2 {
                                 if *v_1 == '.' {
                                     operations.insert(*k_1, *v_2);
@@ -138,7 +156,6 @@ impl Day15 {
                                     operations.insert(*k_2, *v_1);
                                 }
                             }
-
                         }
                     }
                 }
@@ -160,30 +177,78 @@ impl Day15 {
                 let value = *grid.get(Point { x: row, y: col }).unwrap();
                 match value {
                     '#' => {
-                        adjusted_grid.insert(Point { x: row, y: adjusted_col }, '#');
+                        adjusted_grid.insert(
+                            Point {
+                                x: row,
+                                y: adjusted_col,
+                            },
+                            '#',
+                        );
                         adjusted_col += 1;
-                        adjusted_grid.insert(Point { x: row, y: adjusted_col }, '#');
+                        adjusted_grid.insert(
+                            Point {
+                                x: row,
+                                y: adjusted_col,
+                            },
+                            '#',
+                        );
                         adjusted_col += 1;
-                    },
+                    }
                     'O' => {
-                        adjusted_grid.insert(Point { x: row, y: adjusted_col }, '[');
+                        adjusted_grid.insert(
+                            Point {
+                                x: row,
+                                y: adjusted_col,
+                            },
+                            '[',
+                        );
                         adjusted_col += 1;
-                        adjusted_grid.insert(Point { x: row, y: adjusted_col }, ']');
+                        adjusted_grid.insert(
+                            Point {
+                                x: row,
+                                y: adjusted_col,
+                            },
+                            ']',
+                        );
                         adjusted_col += 1;
-                    },
+                    }
                     '.' => {
-                        adjusted_grid.insert(Point { x: row, y: adjusted_col }, '.');
+                        adjusted_grid.insert(
+                            Point {
+                                x: row,
+                                y: adjusted_col,
+                            },
+                            '.',
+                        );
                         adjusted_col += 1;
-                        adjusted_grid.insert(Point { x: row, y: adjusted_col }, '.');
+                        adjusted_grid.insert(
+                            Point {
+                                x: row,
+                                y: adjusted_col,
+                            },
+                            '.',
+                        );
                         adjusted_col += 1;
-                    },
+                    }
                     '@' => {
-                        adjusted_grid.insert(Point { x: row, y: adjusted_col }, '@');
+                        adjusted_grid.insert(
+                            Point {
+                                x: row,
+                                y: adjusted_col,
+                            },
+                            '@',
+                        );
                         adjusted_col += 1;
-                        adjusted_grid.insert(Point { x: row, y: adjusted_col }, '.');
+                        adjusted_grid.insert(
+                            Point {
+                                x: row,
+                                y: adjusted_col,
+                            },
+                            '.',
+                        );
                         adjusted_col += 1;
-                    },
-                    _ => unreachable!()
+                    }
+                    _ => unreachable!(),
                 }
             }
         }
@@ -193,12 +258,19 @@ impl Day15 {
 
     fn sum_of_gps_coordinates(&self, grid: &Grid<char>, box_identifier: char) -> u64 {
         let boxes = grid.filter(box_identifier);
-        boxes.iter().fold(0, |acc, b| acc + (100 * b.x) as u64 + b.y as u64)
+        boxes
+            .iter()
+            .fold(0, |acc, b| acc + (100 * b.x) as u64 + b.y as u64)
     }
 
-    fn follow_instructions(&self, grid: &mut Grid<char>, instructions: Vec<char>, box_identifier: char) -> u64 {
+    fn follow_instructions(
+        &self,
+        grid: &mut Grid<char>,
+        instructions: Vec<char>,
+        box_identifier: char,
+    ) -> u64 {
         let mut position = *grid.find('@').unwrap().0;
-        let walls = grid.filter('#').iter().map(|x| *x ).collect::<Vec<Point>>();
+        let walls = grid.filter('#').iter().map(|x| *x).collect::<Vec<Point>>();
 
         for instruction in instructions {
             let operations = self.move_object_2(grid, position, instruction, &walls);
@@ -216,12 +288,16 @@ impl Day15 {
 }
 
 impl BaseDay for Day15 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let input = self.read_file_into_vec_of_vec();
         let (mut grid, instructions) = self.read_input(input);
-        Ok(self.follow_instructions(&mut grid, instructions, 'O').to_string())
+        Ok(self
+            .follow_instructions(&mut grid, instructions, 'O')
+            .to_string())
     }
 
     fn part_2(&mut self) -> Result<String, Box<dyn Error>> {
@@ -229,7 +305,9 @@ impl BaseDay for Day15 {
         let (_grid, instructions) = self.read_input(input);
         let mut adjusted_grid = self.duplicate_width(&_grid);
 
-        Ok(self.follow_instructions(&mut adjusted_grid, instructions, '[').to_string())
+        Ok(self
+            .follow_instructions(&mut adjusted_grid, instructions, '[')
+            .to_string())
     }
 
     fn get_input_file_path(&self) -> PathBuf {
@@ -320,4 +398,3 @@ mod tests {
         assert_eq!(expected, result.unwrap());
     }
 }
-                

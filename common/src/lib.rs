@@ -8,5 +8,5 @@ pub mod dsu;
 pub mod file;
 
 pub mod base_day;
-pub mod test_utils;
 pub mod config;
+pub mod test_utils;

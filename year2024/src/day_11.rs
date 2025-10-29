@@ -1,8 +1,8 @@
 use common::base_day::BaseDay;
+use common::file::get_input_path;
 use std::collections::HashMap;
 use std::error::Error;
 use std::path::PathBuf;
-use common::file::get_input_path;
 
 pub struct Day11 {
     day_number: u32,
@@ -13,7 +13,7 @@ impl Day11 {
     pub fn new() -> Day11 {
         Day11 {
             day_number: 11,
-            file_path: get_input_path(2024, 11)
+            file_path: get_input_path(2024, 11),
         }
     }
 
@@ -61,29 +61,33 @@ impl BaseDay for Day11 {
     }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
-        Ok(self.blink_for(
-            25,
-            &self
-                .read_file_into_vec()
-                .first()
-                .unwrap()
-                .split(' ')
-                .map(|x| x.parse::<u64>().unwrap())
-                .collect::<Vec<u64>>(),
-        ).to_string())
+        Ok(self
+            .blink_for(
+                25,
+                &self
+                    .read_file_into_vec()
+                    .first()
+                    .unwrap()
+                    .split(' ')
+                    .map(|x| x.parse::<u64>().unwrap())
+                    .collect::<Vec<u64>>(),
+            )
+            .to_string())
     }
 
     fn part_2(&mut self) -> Result<String, Box<dyn Error>> {
-        Ok(self.blink_for(
-            75,
-            &self
-                .read_file_into_vec()
-                .first()
-                .unwrap()
-                .split(' ')
-                .map(|x| x.parse::<u64>().unwrap())
-                .collect::<Vec<u64>>(),
-        ).to_string())
+        Ok(self
+            .blink_for(
+                75,
+                &self
+                    .read_file_into_vec()
+                    .first()
+                    .unwrap()
+                    .split(' ')
+                    .map(|x| x.parse::<u64>().unwrap())
+                    .collect::<Vec<u64>>(),
+            )
+            .to_string())
     }
 
     fn get_input_file_path(&self) -> PathBuf {

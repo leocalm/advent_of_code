@@ -26,12 +26,24 @@ pub trait BaseDay {
     }
 
     fn get_input_file_path(&self) -> PathBuf;
-    
+
+    fn read_file(&self) -> String {
+        fs::read_to_string(self.get_input_file_path()).expect("Error reading input!")
+    }
+
     fn read_file_into_vec(&self) -> Vec<String> {
-        fs::read_to_string(self.get_input_file_path()).expect("Error reading input!").lines().map(String::from).collect()
+        fs::read_to_string(self.get_input_file_path())
+            .expect("Error reading input!")
+            .lines()
+            .map(String::from)
+            .collect()
     }
 
     fn read_file_into_vec_of_vec(&self) -> Vec<Vec<char>> {
-        fs::read_to_string(self.get_input_file_path()).expect("Error reading input!").lines().map(|c| c.chars().collect()).collect()
+        fs::read_to_string(self.get_input_file_path())
+            .expect("Error reading input!")
+            .lines()
+            .map(|c| c.chars().collect())
+            .collect()
     }
 }

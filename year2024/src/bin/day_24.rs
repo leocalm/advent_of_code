@@ -1,15 +1,15 @@
-use std::{fmt, fs};
+use common::base_day::BaseDay;
+use common::file::get_input_path;
+use common::utils::init_logger;
+use itertools::Itertools;
+use log::info;
+use regex::Regex;
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::error::Error;
 use std::hash::Hash;
 use std::path::PathBuf;
-use itertools::Itertools;
-use log::info;
-use regex::Regex;
-use common::base_day::BaseDay;
-use common::file::get_input_path;
-use common::utils::init_logger;
+use std::{fmt, fs};
 
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 enum OperationType {
@@ -85,7 +85,11 @@ struct Gate<'a> {
 
 impl<'a> fmt::Display for Gate<'a> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} = {} {} {}", self.output, self.wire_1, self.operation, self.wire_2)
+        write!(
+            f,
+            "{} = {} {} {}",
+            self.output, self.wire_1, self.operation, self.wire_2
+        )
     }
 }
 
@@ -114,13 +118,26 @@ fn make_wire(prefix: char, bit: usize) -> String {
 }
 
 fn solve<'a>(wires: &HashMap<&'a str, u8>, gates: &[Gate<'a>], output_wires: &[&'a str]) -> String {
-    let x = [0; 45].iter().enumerate().map(|(index, _)| wires[make_wire('x', index).as_str()]).collect_vec();
-    let y = [0; 45].iter().enumerate().map(|(index, _)| wires[make_wire('y', index).as_str()]).collect_vec();
+    let x = [0; 45]
+        .iter()
+        .enumerate()
+        .map(|(index, _)| wires[make_wire('x', index).as_str()])
+        .collect_vec();
+    let y = [0; 45]
+        .iter()
+        .enumerate()
+        .map(|(index, _)| wires[make_wire('y', index).as_str()])
+        .collect_vec();
 
-    output_wires.iter().map(|w| solve_recursion(w, &x, &y, gates)).join("")
+    output_wires
+        .iter()
+        .map(|w| solve_recursion(w, &x, &y, gates))
+        .join("")
 }
 
-fn create_input<'a>(input: &'a [&'a str]) -> Result<(HashMap<&'a str, u8>, Vec<Gate<'a>>, Vec<&'a str>), Box<dyn Error>> {
+fn create_input<'a>(
+    input: &'a [&'a str],
+) -> Result<(HashMap<&'a str, u8>, Vec<Gate<'a>>, Vec<&'a str>), Box<dyn Error>> {
     let mut gates = Vec::new();
     let mut wires = HashMap::new();
 
@@ -143,13 +160,18 @@ fn create_input<'a>(input: &'a [&'a str]) -> Result<(HashMap<&'a str, u8>, Vec<G
         }
     }
 
-    let output_wires = gates.iter().filter_map(|gate| {
-        if gate.output.starts_with("z") {
-            Some(gate.output)
-        } else {
-            None
-        }
-    }).sorted().rev().collect_vec();
+    let output_wires = gates
+        .iter()
+        .filter_map(|gate| {
+            if gate.output.starts_with("z") {
+                Some(gate.output)
+            } else {
+                None
+            }
+        })
+        .sorted()
+        .rev()
+        .collect_vec();
 
     Ok((wires, gates, output_wires))
 }
@@ -173,9 +195,11 @@ impl Day24 {
 }
 
 impl BaseDay for Day24 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
-    fn part_1 (&mut self) -> Result<String, Box<dyn Error>> {
+    fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let file_content = fs::read_to_string(&self.file_path)?;
         let data = file_content.lines().collect_vec();
 

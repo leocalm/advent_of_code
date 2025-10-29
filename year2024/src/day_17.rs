@@ -1,9 +1,9 @@
+use common::base_day::BaseDay;
+use common::file::get_input_path;
+use itertools::Itertools;
 use std::collections::HashSet;
 use std::error::Error;
 use std::path::PathBuf;
-use itertools::Itertools;
-use common::base_day::BaseDay;
-use common::file::get_input_path;
 
 pub struct Day17 {
     day_number: u32,
@@ -48,83 +48,134 @@ impl Operator {
                 // The result of the division operation is truncated to an integer and then written to the A register.
                 let numerator = state.registers.a;
                 let denominator = 2u32.pow(value);
-                (State {
-                    instructions_index: state.instructions_index + 2,
-                    registers: Registers { a: numerator/denominator, b: state.registers.b, c: state.registers.c },
-                }, None)
-            },
+                (
+                    State {
+                        instructions_index: state.instructions_index + 2,
+                        registers: Registers {
+                            a: numerator / denominator,
+                            b: state.registers.b,
+                            c: state.registers.c,
+                        },
+                    },
+                    None,
+                )
+            }
             Self::Bxl => {
                 // The bxl instruction (opcode 1) calculates the bitwise XOR of register B and the instruction's literal operand, then stores the result in register B.
                 let operand_1 = state.registers.b;
                 let operand_2 = instructions[state.instructions_index + 1];
-                (State {
-                    instructions_index: state.instructions_index + 2,
-                    registers: Registers { a: state.registers.a, b: operand_1 ^ operand_2, c: state.registers.c },
-                }, None)
-            },
+                (
+                    State {
+                        instructions_index: state.instructions_index + 2,
+                        registers: Registers {
+                            a: state.registers.a,
+                            b: operand_1 ^ operand_2,
+                            c: state.registers.c,
+                        },
+                    },
+                    None,
+                )
+            }
             Self::Bst => {
                 // The bst instruction (opcode 2) calculates the value of its combo operand modulo 8 (thereby keeping only its lowest 3 bits), then writes that value to the B register.
                 let operand = value;
-                (State {
-                    instructions_index: state.instructions_index + 2,
-                    registers: Registers { a: state.registers.a, b: operand % 8, c: state.registers.c },
-                }, None)
-            },
+                (
+                    State {
+                        instructions_index: state.instructions_index + 2,
+                        registers: Registers {
+                            a: state.registers.a,
+                            b: operand % 8,
+                            c: state.registers.c,
+                        },
+                    },
+                    None,
+                )
+            }
             Self::Jnz => {
                 // The jnz instruction (opcode 3) does nothing if the A register is 0.
                 // However, if the A register is not zero, it jumps by setting the instruction pointer to the value of its literal operand;
                 // if this instruction jumps, the instruction pointer is not increased by 2 after this instruction.
                 if state.registers.a == 0 {
-                    (State {
-                        instructions_index: state.instructions_index + 2,
-                        registers: state.registers,
-                    }, None)
+                    (
+                        State {
+                            instructions_index: state.instructions_index + 2,
+                            registers: state.registers,
+                        },
+                        None,
+                    )
                 } else {
                     let value = instructions[state.instructions_index + 1];
-                    (State {
-                        instructions_index: value as usize,
-                        registers: state.registers,
-                    }, None)
+                    (
+                        State {
+                            instructions_index: value as usize,
+                            registers: state.registers,
+                        },
+                        None,
+                    )
                 }
-            },
+            }
             Self::Bxc => {
                 // The bxc instruction (opcode 4) calculates the bitwise XOR of register B and register C, then stores the result in register B.
                 // (For legacy reasons, this instruction reads an operand but ignores it.)
                 let operand_1 = state.registers.b;
                 let operand_2 = state.registers.c;
-                (State {
-                    instructions_index: state.instructions_index + 2,
-                    registers: Registers { a: state.registers.a, b: operand_1 ^ operand_2, c: state.registers.c },
-                }, None)
-            },
+                (
+                    State {
+                        instructions_index: state.instructions_index + 2,
+                        registers: Registers {
+                            a: state.registers.a,
+                            b: operand_1 ^ operand_2,
+                            c: state.registers.c,
+                        },
+                    },
+                    None,
+                )
+            }
             Self::Out => {
                 // The out instruction (opcode 5) calculates the value of its combo operand modulo 8, then outputs that value.
                 // (If a program outputs multiple values, they are separated by commas.)
-                (State {
-                    instructions_index: state.instructions_index + 2,
-                    registers: state.registers,
-                }, Some(value % 8))
-            },
+                (
+                    State {
+                        instructions_index: state.instructions_index + 2,
+                        registers: state.registers,
+                    },
+                    Some(value % 8),
+                )
+            }
             Self::Bdv => {
                 // The bdv instruction (opcode 6) works exactly like the adv instruction except that the result is stored in the B register.
                 // (The numerator is still read from the A register.)
                 let numerator = state.registers.a;
                 let denominator = 2u32.pow(value);
-                (State {
-                    instructions_index: state.instructions_index + 2,
-                    registers: Registers { a: state.registers.a, b: numerator/denominator, c: state.registers.c },
-                }, None)
-            },
+                (
+                    State {
+                        instructions_index: state.instructions_index + 2,
+                        registers: Registers {
+                            a: state.registers.a,
+                            b: numerator / denominator,
+                            c: state.registers.c,
+                        },
+                    },
+                    None,
+                )
+            }
             Self::Cdv => {
                 // The cdv instruction (opcode 7) works exactly like the adv instruction except that the result is stored in the C register.
                 // (The numerator is still read from the A register.)
                 let numerator = state.registers.a;
                 let denominator = 2u32.pow(value);
-                (State {
-                    instructions_index: state.instructions_index + 2,
-                    registers: Registers { a: state.registers.a, b: state.registers.b, c: numerator/denominator },
-                }, None)
-            },
+                (
+                    State {
+                        instructions_index: state.instructions_index + 2,
+                        registers: Registers {
+                            a: state.registers.a,
+                            b: state.registers.b,
+                            c: numerator / denominator,
+                        },
+                    },
+                    None,
+                )
+            }
         }
     }
 }
@@ -205,9 +256,11 @@ fn f(a: u64) -> u64 {
 /// ```
 fn solve_part_2(expected_output: Vec<u64>) -> u64 {
     // Start with small values for A
-    let mut valid: HashSet<u64> = (0..200).filter(|a| f(*a) == *expected_output.last().unwrap()).collect();
+    let mut valid: HashSet<u64> = (0..200)
+        .filter(|a| f(*a) == *expected_output.last().unwrap())
+        .collect();
 
-    for index in (0..expected_output.len() -1).rev() {
+    for index in (0..expected_output.len() - 1).rev() {
         let target = expected_output[index];
         let mut tmp_valid = HashSet::new();
         for _a in valid.iter() {
@@ -236,7 +289,10 @@ impl Day17 {
     fn run_program(&self, registers: Registers, instructions: &Vec<u32>) -> (State, String) {
         let mut result = Vec::new();
 
-        let mut state = State { instructions_index: 0, registers };
+        let mut state = State {
+            instructions_index: 0,
+            registers,
+        };
 
         while state.instructions_index as usize <= instructions.len() - 2 {
             let operator_code = instructions[state.instructions_index];
@@ -258,18 +314,45 @@ impl Day17 {
         let _register_c_line = input.get(2).unwrap();
         let _program_line = input.get(4).unwrap();
 
-        let register_a = _register_a_line.split(": ").nth(1).unwrap().parse::<u32>().unwrap();
-        let register_b = _register_b_line.split(": ").nth(1).unwrap().parse::<u32>().unwrap();
-        let register_c = _register_c_line.split(": ").nth(1).unwrap().parse::<u32>().unwrap();
-        let program = _program_line.split(": ").nth(1).unwrap().split(",").map(|s| s.parse::<u32>().unwrap()).collect::<Vec<u32>>();
+        let register_a = _register_a_line
+            .split(": ")
+            .nth(1)
+            .unwrap()
+            .parse::<u32>()
+            .unwrap();
+        let register_b = _register_b_line
+            .split(": ")
+            .nth(1)
+            .unwrap()
+            .parse::<u32>()
+            .unwrap();
+        let register_c = _register_c_line
+            .split(": ")
+            .nth(1)
+            .unwrap()
+            .parse::<u32>()
+            .unwrap();
+        let program = _program_line
+            .split(": ")
+            .nth(1)
+            .unwrap()
+            .split(",")
+            .map(|s| s.parse::<u32>().unwrap())
+            .collect::<Vec<u32>>();
 
-        let registers = Registers { a: register_a, b: register_b, c: register_c};
+        let registers = Registers {
+            a: register_a,
+            b: register_b,
+            c: register_c,
+        };
         (registers, program)
     }
 }
 
 impl BaseDay for Day17 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let (registers, program) = self.read_input();
@@ -322,7 +405,11 @@ mod tests {
         let expected = 1;
 
         let day = Day17::new();
-        let registers = Registers { a: register_a, b: register_b, c: register_c};
+        let registers = Registers {
+            a: register_a,
+            b: register_b,
+            c: register_c,
+        };
         let (state, result) = day.run_program(registers, &instructions);
 
         assert_eq!(expected, state.registers.b);
@@ -339,7 +426,11 @@ mod tests {
         let expected = "0,1,2";
 
         let day = Day17::new();
-        let registers = Registers { a: register_a, b: register_b, c: register_c};
+        let registers = Registers {
+            a: register_a,
+            b: register_b,
+            c: register_c,
+        };
         let (_, result) = day.run_program(registers, &instructions);
 
         assert_eq!(result, expected);
@@ -356,7 +447,11 @@ mod tests {
         let register_a_expected = 0;
 
         let day = Day17::new();
-        let registers = Registers { a: register_a, b: register_b, c: register_c};
+        let registers = Registers {
+            a: register_a,
+            b: register_b,
+            c: register_c,
+        };
         let (state, result) = day.run_program(registers, &instructions);
 
         assert_eq!(result, expected);
@@ -373,7 +468,11 @@ mod tests {
         let expected = 26;
 
         let day = Day17::new();
-        let registers = Registers { a: register_a, b: register_b, c: register_c};
+        let registers = Registers {
+            a: register_a,
+            b: register_b,
+            c: register_c,
+        };
         let (state, result) = day.run_program(registers, &instructions);
 
         assert_eq!(expected, state.registers.b);
@@ -390,11 +489,14 @@ mod tests {
         let expected = 44354;
 
         let day = Day17::new();
-        let registers = Registers { a: register_a, b: register_b, c: register_c};
+        let registers = Registers {
+            a: register_a,
+            b: register_b,
+            c: register_c,
+        };
         let (state, result) = day.run_program(registers, &instructions);
 
         assert_eq!(expected, state.registers.b);
         assert_eq!(result, "");
     }
 }
-                

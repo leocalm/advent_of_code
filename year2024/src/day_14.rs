@@ -1,8 +1,8 @@
-use std::error::Error;
-use std::path::PathBuf;
-use itertools::Itertools;
 use common::base_day::BaseDay;
 use common::file::get_input_path;
+use itertools::Itertools;
+use std::error::Error;
+use std::path::PathBuf;
 
 #[derive(Debug, Clone)]
 struct Robot {
@@ -29,7 +29,10 @@ impl Robot {
             vel_y = -vel_y;
         }
 
-        Robot { position: (pos_y, pos_x), velocity: (vel_y, vel_x) }
+        Robot {
+            position: (pos_y, pos_x),
+            velocity: (vel_y, vel_x),
+        }
     }
 }
 
@@ -46,8 +49,16 @@ impl Day14 {
         }
     }
 
-    fn move_robot_without_loop(&self, robot: &Robot, number_of_steps: i64, grid_size: (i64, i64)) -> (i64, i64) {
-        let mut new_position = (robot.position.0 + number_of_steps * robot.velocity.0, robot.position.1 + number_of_steps * robot.velocity.1);
+    fn move_robot_without_loop(
+        &self,
+        robot: &Robot,
+        number_of_steps: i64,
+        grid_size: (i64, i64),
+    ) -> (i64, i64) {
+        let mut new_position = (
+            robot.position.0 + number_of_steps * robot.velocity.0,
+            robot.position.1 + number_of_steps * robot.velocity.1,
+        );
 
         let rest_0 = new_position.0 % (grid_size.0);
         let rest_1 = new_position.1 % (grid_size.1);
@@ -85,7 +96,11 @@ impl Day14 {
         }
     }
 
-    fn number_of_robots_per_quadrant(&self, positions: &Vec<(i64, i64)>, grid_size: (i64, i64)) -> (u64, u64, u64, u64) {
+    fn number_of_robots_per_quadrant(
+        &self,
+        positions: &Vec<(i64, i64)>,
+        grid_size: (i64, i64),
+    ) -> (u64, u64, u64, u64) {
         let mut first_quadrant = 0;
         let mut second_quadrant = 0;
         let mut third_quadrant = 0;
@@ -110,7 +125,12 @@ impl Day14 {
             }
         }
 
-        (first_quadrant as u64, second_quadrant as u64, third_quadrant as u64, fourth_quadrant as u64)
+        (
+            first_quadrant as u64,
+            second_quadrant as u64,
+            third_quadrant as u64,
+            fourth_quadrant as u64,
+        )
     }
 
     fn count_touches(&self, positions: &Vec<(i64, i64)>) -> u64 {
@@ -120,20 +140,22 @@ impl Day14 {
             if positions.into_iter().contains(&(p.0 + 1, p.1))
                 || positions.into_iter().contains(&(p.0, p.1 + 1))
                 || positions.into_iter().contains(&(p.0 + 1, p.1 + 1))
-                || positions.into_iter().contains(&(p.0 -1, p.1))
+                || positions.into_iter().contains(&(p.0 - 1, p.1))
                 || positions.into_iter().contains(&(p.0, p.1 - 1))
-                || positions.into_iter().contains(&(p.0 -1, p.1- 1)) {
+                || positions.into_iter().contains(&(p.0 - 1, p.1 - 1))
+            {
                 result += 1;
             }
         }
 
         result
     }
-
 }
 
 impl BaseDay for Day14 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let grid_size = (103, 101);
@@ -184,4 +206,3 @@ impl BaseDay for Day14 {
         self.file_path.clone()
     }
 }
-                

@@ -1,10 +1,10 @@
-use std::collections::{HashMap, HashSet};
-use itertools::Itertools;
 use crate::graph::{Graph, Node};
 use crate::grid::{Grid, Point};
-use std::collections::VecDeque;
-use std::hash::Hash;
 use env_logger::Env;
+use itertools::Itertools;
+use std::collections::VecDeque;
+use std::collections::{HashMap, HashSet};
+use std::hash::Hash;
 
 #[allow(dead_code)]
 pub const DIFFS: [(i32, i32); 4] = [(0, 1), (0, -1), (1, 0), (-1, 0)];
@@ -41,7 +41,12 @@ pub fn add_corners(grid: &Grid<char>, graph: &mut Graph<Point>, value_to_add: ch
     }
 }
 
-pub fn get_edge_cost(grid: &Grid<char>, point_1: Point, point_2: Point, value_to_ignore: char) -> Option<u64> {
+pub fn get_edge_cost(
+    grid: &Grid<char>,
+    point_1: Point,
+    point_2: Point,
+    value_to_ignore: char,
+) -> Option<u64> {
     let mut result = 0;
 
     if point_1.x == point_2.x {
@@ -73,10 +78,9 @@ pub fn get_edge_cost(grid: &Grid<char>, point_1: Point, point_2: Point, value_to
         }
         Some(result)
     } else {
-        return None;
+        None
     }
 }
-
 
 pub fn add_edges_to_graph(grid: &Grid<char>, graph: &mut Graph<Point>, value_to_ignore: char) {
     let nodes_clone = graph.nodes.clone();
@@ -87,21 +91,45 @@ pub fn add_edges_to_graph(grid: &Grid<char>, graph: &mut Graph<Point>, value_to_
         let point_1 = graph.get_node(point_1_id).unwrap().value;
         let point_2 = graph.get_node(point_2_id).unwrap().value;
 
-        if (graph.edges.contains_key(&point_1_id) && graph.edges.get(&point_1_id).unwrap().iter().any(|e| e.target == point_2_id)) || (graph.edges.contains_key(&point_2_id) && graph.edges.get(&point_2_id).unwrap().iter().any(|e| e.target == point_1_id)) {
+        if (graph.edges.contains_key(&point_1_id)
+            && graph
+                .edges
+                .get(&point_1_id)
+                .unwrap()
+                .iter()
+                .any(|e| e.target == point_2_id))
+            || (graph.edges.contains_key(&point_2_id)
+                && graph
+                    .edges
+                    .get(&point_2_id)
+                    .unwrap()
+                    .iter()
+                    .any(|e| e.target == point_1_id))
+        {
             continue;
         }
 
-        let cost = get_edge_cost(grid, point_1, point_2, value_to_ignore);
-        if cost.is_some() {
-            graph.add_edge(point_1_id, point_2_id, cost.unwrap());
-            graph.add_edge(point_2_id, point_1_id, cost.unwrap());
+        if let Some(cost) = get_edge_cost(grid, point_1, point_2, value_to_ignore) {
+            graph.add_edge(point_1_id, point_2_id, cost);
+            graph.add_edge(point_2_id, point_1_id, cost);
         }
     }
 }
 
-
-pub fn rebuild_path_counting_nodes(graph: &Graph<Point>, predecessors: &HashMap<u32, Vec<u32>>, start_node: u32, end_node: u32) -> HashSet<Point> {
-    fn backtrack(current: u32, start_node: u32, predecessors: &HashMap<u32, Vec<u32>>, visited: &mut HashSet<Point>, nodes: &HashMap<u32, Node<Point>>, visited_nodes: &mut HashSet<(u32, u32)>) {
+pub fn rebuild_path_counting_nodes(
+    graph: &Graph<Point>,
+    predecessors: &HashMap<u32, Vec<u32>>,
+    start_node: u32,
+    end_node: u32,
+) -> HashSet<Point> {
+    fn backtrack(
+        current: u32,
+        _start_node: u32,
+        predecessors: &HashMap<u32, Vec<u32>>,
+        visited: &mut HashSet<Point>,
+        nodes: &HashMap<u32, Node<Point>>,
+        visited_nodes: &mut HashSet<(u32, u32)>,
+    ) {
         for &pred in &predecessors[&current] {
             if visited_nodes.contains(&(current, pred)) {
                 continue;
@@ -116,7 +144,10 @@ pub fn rebuild_path_counting_nodes(graph: &Graph<Point>, predecessors: &HashMap<
                     pred_node.y..current_node.y + 1
                 };
                 for y in range.rev() {
-                    visited.insert(Point { x: current_node.x, y });
+                    visited.insert(Point {
+                        x: current_node.x,
+                        y,
+                    });
                 }
             } else if current_node.y == pred_node.y {
                 let range = if current_node.x < pred_node.x {
@@ -125,25 +156,46 @@ pub fn rebuild_path_counting_nodes(graph: &Graph<Point>, predecessors: &HashMap<
                     pred_node.x..current_node.x + 1
                 };
                 for x in range.rev() {
-                    visited.insert(Point { x, y: current_node.y });
+                    visited.insert(Point {
+                        x,
+                        y: current_node.y,
+                    });
                 }
             } else {
                 panic!("Both X and Y are different!")
             }
 
-            backtrack(pred, start_node, predecessors, visited, nodes, visited_nodes);
-            visited_nodes.insert((current,pred));
+            backtrack(
+                pred,
+                _start_node,
+                predecessors,
+                visited,
+                nodes,
+                visited_nodes,
+            );
+            visited_nodes.insert((current, pred));
         }
     }
 
     let mut result = HashSet::new();
     let mut visited_nodes = HashSet::new();
-    backtrack(end_node, start_node, predecessors, &mut result, &graph.nodes, &mut visited_nodes);
+    backtrack(
+        end_node,
+        start_node,
+        predecessors,
+        &mut result,
+        &graph.nodes,
+        &mut visited_nodes,
+    );
     result
 }
 
 #[allow(dead_code)]
-pub fn bfs_distances<T: PartialEq + Eq + Copy>(input: &[Vec<T>], start: Point, wall_symbol: T) -> Vec<Vec<i32>> {
+pub fn bfs_distances<T: PartialEq + Eq + Copy>(
+    input: &[Vec<T>],
+    start: Point,
+    wall_symbol: T,
+) -> Vec<Vec<i32>> {
     let rows = input.len() as i32;
     let cols = input[0].len() as i32;
     let mut dist = vec![vec![-1; cols as usize]; rows as usize];
@@ -160,8 +212,12 @@ pub fn bfs_distances<T: PartialEq + Eq + Copy>(input: &[Vec<T>], start: Point, w
                 continue;
             }
             let ch = input[np.x as usize][np.y as usize];
-            if ch == wall_symbol { continue; }
-            if dist[np.x as usize][np.y as usize] != -1 { continue; }
+            if ch == wall_symbol {
+                continue;
+            }
+            if dist[np.x as usize][np.y as usize] != -1 {
+                continue;
+            }
 
             dist[np.x as usize][np.y as usize] = d + 1;
             q.push_back(np);
@@ -171,7 +227,7 @@ pub fn bfs_distances<T: PartialEq + Eq + Copy>(input: &[Vec<T>], start: Point, w
     dist
 }
 
-pub fn init_logger(){
+pub fn init_logger() {
     let env = Env::default()
         .filter_or("MY_LOG_LEVEL", "info")
         .write_style_or("MY_LOG_STYLE", "always");
@@ -183,13 +239,18 @@ pub fn manhattan_distance(a: (i32, i32), b: (i32, i32)) -> i32 {
     (a.0.abs_diff(b.0) + a.1.abs_diff(b.1)) as i32
 }
 
-pub fn bron_kerbosch<T>(r: &mut HashSet<T>, p: &mut HashSet<T>, x: &mut HashSet<T>, g: &HashMap<T, HashSet<T>>, cliques: &mut Vec<Vec<T>>)
-where
-    T: Default + Copy + Eq + PartialEq + Hash + Ord + PartialOrd
+pub fn bron_kerbosch<T>(
+    r: &mut HashSet<T>,
+    p: &mut HashSet<T>,
+    x: &mut HashSet<T>,
+    g: &HashMap<T, HashSet<T>>,
+    cliques: &mut Vec<Vec<T>>,
+) where
+    T: Default + Copy + Eq + PartialEq + Hash + Ord + PartialOrd,
 {
     if p.is_empty() && x.is_empty() {
         if r.len() > 2 {
-            cliques.push(r.iter().sorted().map(|&x| x).collect_vec());
+            cliques.push(r.iter().sorted().copied().collect_vec());
         }
         return;
     }

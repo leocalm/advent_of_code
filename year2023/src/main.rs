@@ -1,4 +1,3 @@
-use common::base_day::BaseDay;
 use crate::bin::day_1::Day1;
 use crate::bin::day_2::Day2;
 use crate::bin::day_3::Day3;
@@ -24,10 +23,11 @@ use crate::bin::day_22::Day22;
 use crate::bin::day_23::Day23;
 use crate::bin::day_24::Day24;
 use crate::bin::day_25::Day25;
+use common::base_day::BaseDay;
 
+use clap::Parser;
 use env_logger::Env;
 use log::info;
-use clap::Parser;
 mod bin;
 
 #[derive(Parser, Debug)]

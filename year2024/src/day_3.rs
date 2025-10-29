@@ -1,9 +1,9 @@
+use common::base_day::BaseDay;
 use std::error::Error;
 use std::path::PathBuf;
-use common::base_day::BaseDay;
 
-use regex::Regex;
 use common::file::get_input_path;
+use regex::Regex;
 
 pub struct Day3 {
     day_number: u32,
@@ -14,13 +14,15 @@ impl Day3 {
     pub fn new() -> Day3 {
         Day3 {
             day_number: 3,
-            file_path: get_input_path(2024, 3)
+            file_path: get_input_path(2024, 3),
         }
     }
 }
 
 impl BaseDay for Day3 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let mut result: u64 = 0;
@@ -47,11 +49,20 @@ impl BaseDay for Day3 {
                     enabled = false;
                 } else {
                     if enabled {
-                        let numbers: Vec<u64> = match_result.as_str().split('(').last().unwrap().split(')').next().unwrap().split(',').map(|c| c.parse::<u64>().unwrap()).collect();
+                        let numbers: Vec<u64> = match_result
+                            .as_str()
+                            .split('(')
+                            .last()
+                            .unwrap()
+                            .split(')')
+                            .next()
+                            .unwrap()
+                            .split(',')
+                            .map(|c| c.parse::<u64>().unwrap())
+                            .collect();
                         result += numbers[0] * numbers[1];
                     }
                 }
-
             }
         }
         Ok(result.to_string())

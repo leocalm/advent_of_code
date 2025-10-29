@@ -1,14 +1,14 @@
-use std::collections::HashSet;
-use std::error::Error;
-use std::path::PathBuf;
-use itertools::Itertools;
 use common::base_day::BaseDay;
 use common::file::get_input_path;
 use common::grid::{Grid, Point};
+use itertools::Itertools;
+use std::collections::HashSet;
+use std::error::Error;
+use std::path::PathBuf;
 
 pub struct Day8 {
     day_number: u32,
-    file_path: PathBuf
+    file_path: PathBuf,
 }
 
 impl Day8 {
@@ -19,7 +19,13 @@ impl Day8 {
         }
     }
 
-    fn get_antinodes_for_antenna_pair(&self, antenna_1: Point, antenna_2: Point, rows: i32, cols: i32) -> (Option<Point>, Option<Point>) {
+    fn get_antinodes_for_antenna_pair(
+        &self,
+        antenna_1: Point,
+        antenna_2: Point,
+        rows: i32,
+        cols: i32,
+    ) -> (Option<Point>, Option<Point>) {
         let antinode_1;
         let antinode_2;
 
@@ -30,26 +36,38 @@ impl Day8 {
                 if antenna_1.x < diff_x || antenna_1.y < diff_y {
                     antinode_1 = None;
                 } else {
-                    antinode_1 = Some(Point { x: antenna_1.x - diff_x, y: antenna_1.y - diff_y });
+                    antinode_1 = Some(Point {
+                        x: antenna_1.x - diff_x,
+                        y: antenna_1.y - diff_y,
+                    });
                 }
 
                 if antenna_2.x + diff_x >= rows || antenna_2.y + diff_y >= cols {
                     antinode_2 = None;
                 } else {
-                    antinode_2 = Some(Point { x: antenna_2.x + diff_x, y: antenna_2.y + diff_y });
+                    antinode_2 = Some(Point {
+                        x: antenna_2.x + diff_x,
+                        y: antenna_2.y + diff_y,
+                    });
                 }
             } else {
                 let diff_y = antenna_1.y - antenna_2.y;
                 if antenna_1.x < diff_x || antenna_1.y + diff_y >= cols {
                     antinode_1 = None;
                 } else {
-                    antinode_1 = Some(Point { x: antenna_1.x - diff_x, y: antenna_1.y + diff_y });
+                    antinode_1 = Some(Point {
+                        x: antenna_1.x - diff_x,
+                        y: antenna_1.y + diff_y,
+                    });
                 }
 
                 if antenna_2.y < diff_y || antenna_2.x + diff_x >= rows {
                     antinode_2 = None;
                 } else {
-                    antinode_2 = Some(Point { x: antenna_2.x + diff_x, y: antenna_2.y - diff_y });
+                    antinode_2 = Some(Point {
+                        x: antenna_2.x + diff_x,
+                        y: antenna_2.y - diff_y,
+                    });
                 }
             }
         } else {
@@ -60,26 +78,38 @@ impl Day8 {
                 if antenna_1.y < diff_y || antenna_1.x + diff_x >= rows {
                     antinode_1 = None;
                 } else {
-                    antinode_1 = Some(Point { x: antenna_1.x + diff_x, y: antenna_1.y - diff_y });
+                    antinode_1 = Some(Point {
+                        x: antenna_1.x + diff_x,
+                        y: antenna_1.y - diff_y,
+                    });
                 }
 
                 if antenna_2.x < diff_x || antenna_2.y + diff_y >= cols {
                     antinode_2 = None;
                 } else {
-                    antinode_2 = Some(Point { x: antenna_2.x - diff_x, y: antenna_2.y + diff_y });
+                    antinode_2 = Some(Point {
+                        x: antenna_2.x - diff_x,
+                        y: antenna_2.y + diff_y,
+                    });
                 }
             } else {
                 let diff_y = antenna_1.y - antenna_2.y;
                 if antenna_2.x < diff_x || antenna_2.y < diff_y {
                     antinode_2 = None;
                 } else {
-                    antinode_2 = Some(Point { x: antenna_2.x - diff_x, y: antenna_2.y - diff_y });
+                    antinode_2 = Some(Point {
+                        x: antenna_2.x - diff_x,
+                        y: antenna_2.y - diff_y,
+                    });
                 }
 
                 if antenna_1.x + diff_x >= rows || antenna_1.y + diff_y >= cols {
                     antinode_1 = None;
                 } else {
-                    antinode_1 = Some(Point { x: antenna_1.x + diff_x, y: antenna_1.y + diff_y });
+                    antinode_1 = Some(Point {
+                        x: antenna_1.x + diff_x,
+                        y: antenna_1.y + diff_y,
+                    });
                 }
             }
         }
@@ -87,22 +117,54 @@ impl Day8 {
         (antinode_1, antinode_2)
     }
 
-    fn get_antinodes_in_line(&self, antenna_1: Point, antenna_2: Point, rows: i32, cols: i32) -> HashSet<Point> {
+    fn get_antinodes_in_line(
+        &self,
+        antenna_1: Point,
+        antenna_2: Point,
+        rows: i32,
+        cols: i32,
+    ) -> HashSet<Point> {
         let mut antinodes = HashSet::new();
 
         let diff_x = antenna_1.x - antenna_2.x;
         let diff_y = antenna_1.y - antenna_2.y;
 
-        let mut current_node = Point { x: antenna_1.x, y: antenna_1.y };
-        while current_node.x >= 0 && current_node.y >= 0 && current_node.x < rows && current_node.y < cols  {
-            antinodes.insert(Point { x: current_node.x, y: current_node.y });
-            current_node = Point { x: current_node.x - diff_x, y: current_node.y - diff_y };
+        let mut current_node = Point {
+            x: antenna_1.x,
+            y: antenna_1.y,
+        };
+        while current_node.x >= 0
+            && current_node.y >= 0
+            && current_node.x < rows
+            && current_node.y < cols
+        {
+            antinodes.insert(Point {
+                x: current_node.x,
+                y: current_node.y,
+            });
+            current_node = Point {
+                x: current_node.x - diff_x,
+                y: current_node.y - diff_y,
+            };
         }
 
-        current_node = Point { x: antenna_1.x, y: antenna_1.y };
-        while current_node.x >= 0 && current_node.y >= 0 && current_node.x < rows && current_node.y < cols {
-            antinodes.insert(Point { x: current_node.x, y: current_node.y });
-            current_node = Point { x: current_node.x + diff_x, y: current_node.y + diff_y };
+        current_node = Point {
+            x: antenna_1.x,
+            y: antenna_1.y,
+        };
+        while current_node.x >= 0
+            && current_node.y >= 0
+            && current_node.x < rows
+            && current_node.y < cols
+        {
+            antinodes.insert(Point {
+                x: current_node.x,
+                y: current_node.y,
+            });
+            current_node = Point {
+                x: current_node.x + diff_x,
+                y: current_node.y + diff_y,
+            };
         }
 
         antinodes
@@ -110,7 +172,9 @@ impl Day8 {
 }
 
 impl BaseDay for Day8 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let input = self.read_file_into_vec_of_vec();
@@ -121,7 +185,12 @@ impl BaseDay for Day8 {
             let pairs_of_antennas = antennas_for_key.iter().combinations(2).collect::<Vec<_>>();
 
             for pair in pairs_of_antennas {
-                let antinodes = self.get_antinodes_for_antenna_pair(*pair[0], *pair[1], grid.rows(), grid.cols());
+                let antinodes = self.get_antinodes_for_antenna_pair(
+                    *pair[0],
+                    *pair[1],
+                    grid.rows(),
+                    grid.cols(),
+                );
                 if antinodes.0.is_some() {
                     set_of_antinodes.insert(antinodes.0.unwrap());
                 }
@@ -143,7 +212,15 @@ impl BaseDay for Day8 {
             let pairs_of_antennas = antennas_for_key.iter().combinations(2).collect::<Vec<_>>();
 
             for pair in pairs_of_antennas {
-                set_of_antinodes = set_of_antinodes.union(&self.get_antinodes_in_line(*pair[0], *pair[1], grid.rows(), grid.cols())).copied().collect();
+                set_of_antinodes = set_of_antinodes
+                    .union(&self.get_antinodes_in_line(
+                        *pair[0],
+                        *pair[1],
+                        grid.rows(),
+                        grid.cols(),
+                    ))
+                    .copied()
+                    .collect();
             }
         }
 

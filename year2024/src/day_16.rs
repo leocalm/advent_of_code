@@ -1,10 +1,10 @@
-use std::error::Error;
-use std::path::PathBuf;
 use common::base_day::BaseDay;
 use common::file::get_input_path;
-use common::grid::{Grid, Point};
 use common::graph::Graph;
+use common::grid::{Grid, Point};
 use common::utils::{add_corners, add_edges_to_graph, rebuild_path_counting_nodes};
+use std::error::Error;
+use std::path::PathBuf;
 
 const START_SYMBOL: char = 'S';
 const END_SYMBOL: char = 'E';
@@ -43,14 +43,17 @@ impl Day16 {
         add_edges_to_graph(&grid, &mut graph, WALL_SYMBOL);
         let (result, predecessors) = graph.dijkstra(start_node);
 
-        let unique_points = rebuild_path_counting_nodes(&graph, &predecessors, start_node, end_node);
+        let unique_points =
+            rebuild_path_counting_nodes(&graph, &predecessors, start_node, end_node);
 
         (*result.get(&end_node).unwrap(), unique_points.len() as u64)
     }
 }
 
 impl BaseDay for Day16 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         Ok(self.part_1_result.unwrap().to_string())
@@ -126,4 +129,3 @@ mod tests {
         assert_eq!(expected, result.unwrap());
     }
 }
-                

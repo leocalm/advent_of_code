@@ -1,11 +1,11 @@
-use std::collections::{HashMap, HashSet};
-use std::error::Error;
-use std::path::PathBuf;
 use common::base_day::BaseDay;
 use common::file::get_input_path;
 use common::graph::{Graph, Node};
-use common::utils::{bfs_distances, DIFFS};
 use common::grid::{Grid, Point};
+use common::utils::{DIFFS, bfs_distances};
+use std::collections::{HashMap, HashSet};
+use std::error::Error;
+use std::path::PathBuf;
 
 const NODE_SYMBOL: char = '.';
 const WALL_SYMBOL: char = '#';
@@ -53,27 +53,28 @@ impl Day20 {
             for (y, &value) in row.iter().enumerate() {
                 let point = Point {
                     x: x as i32,
-                    y: y as i32
+                    y: y as i32,
                 };
 
                 if value == NODE_SYMBOL {
                     self.graph.add_node(point);
                 } else if value == START_SYMBOL {
-                    self.start_point =self.graph.add_node(point);
+                    self.start_point = self.graph.add_node(point);
                 } else if value == END_SYMBOL {
-                    self.end_point =self.graph.add_node(point);
+                    self.end_point = self.graph.add_node(point);
                 }
             }
         }
 
-        let nodes = self.graph
+        let nodes = self
+            .graph
             .get_nodes()
             .iter()
             .map(|(&id, &node)| (id, node.value))
             .collect::<Vec<(u32, Point)>>();
 
-        for (node_id, point) in nodes{
-            for diff in DIFFS{
+        for (node_id, point) in nodes {
+            for diff in DIFFS {
                 let neighbour = point.add_tuple(diff);
                 if let Some(neighbor_id) = self.graph.get_node_id(Node { value: neighbour }) {
                     self.graph.add_edge(node_id, neighbor_id, 1);
@@ -81,43 +82,51 @@ impl Day20 {
             }
         }
 
-        let (result, _) =  self.graph.dijkstra(self.start_point);
+        let (result, _) = self.graph.dijkstra(self.start_point);
         self.costs_from_start = result;
-        self.original_cost = *self.costs_from_start
+        self.original_cost = *self
+            .costs_from_start
             .get(&self.end_point)
             .expect("Path from start to end not found");
 
-        let (result, _) =  self.graph.dijkstra(self.end_point);
+        let (result, _) = self.graph.dijkstra(self.end_point);
         self.costs_from_end = result;
     }
 
     fn calculate_cost_for_neighbours(&self, n1: Point, n2: Point) -> (u64, u64) {
-        let neighbour_1 = self.graph
+        let neighbour_1 = self
+            .graph
             .get_node_id(Node { value: n1 })
             .expect("Node n1 exists in grid but not in graph");
 
-        let neighbour_2 = self.graph
+        let neighbour_2 = self
+            .graph
             .get_node_id(Node { value: n2 })
             .expect("Node n2 exists in grid but not in graph");
 
-        let mut cost_1_from_start = *self.costs_from_start
+        let mut cost_1_from_start = *self
+            .costs_from_start
             .get(&neighbour_1)
             .expect("Cost for neighbour 1 not found");
 
-        let cost_2_from_start = *self.costs_from_start
+        let cost_2_from_start = *self
+            .costs_from_start
             .get(&neighbour_2)
             .expect("Cost for neighbour 1 not found");
 
-        let mut cost_2_from_end = *self.costs_from_end
+        let mut cost_2_from_end = *self
+            .costs_from_end
             .get(&neighbour_2)
             .expect("Cost for neighbour 2 not found");
 
         if cost_2_from_start < cost_1_from_start {
-            cost_1_from_start = *self.costs_from_end
+            cost_1_from_start = *self
+                .costs_from_end
                 .get(&neighbour_1)
                 .expect("Cost for neighbour 1 not found");
 
-            cost_2_from_end = *self.costs_from_start
+            cost_2_from_end = *self
+                .costs_from_start
                 .get(&neighbour_2)
                 .expect("Cost for neighbour 2 not found");
         }
@@ -130,16 +139,19 @@ impl Day20 {
             let n1 = wall.add(pair.0.0, pair.0.1);
             let n2 = wall.add(pair.1.0, pair.1.1);
 
-            let is_n1_valid = self.grid
+            let is_n1_valid = self
+                .grid
                 .get(n1)
                 .is_some_and(|&n| POSSIBLE_CHARS.contains(&n));
 
-            let is_n2_valid = self.grid
+            let is_n2_valid = self
+                .grid
                 .get(n2)
                 .is_some_and(|&n| POSSIBLE_CHARS.contains(&n));
 
             if is_n1_valid && is_n2_valid {
-                let (cost_1_from_start, cost_2_from_end) = self.calculate_cost_for_neighbours(n1, n2);
+                let (cost_1_from_start, cost_2_from_end) =
+                    self.calculate_cost_for_neighbours(n1, n2);
 
                 return Some(cost_1_from_start + cost_2_from_end + 2);
             }
@@ -147,7 +159,7 @@ impl Day20 {
         None
     }
 
-    fn part_2_v1(&mut self) -> u64{
+    fn part_2_v1(&mut self) -> u64 {
         let mut result = 0;
 
         let nodes: HashSet<Point> = HashSet::from_iter(self.grid.filter_contains(&POSSIBLE_CHARS));
@@ -158,14 +170,16 @@ impl Day20 {
                 for dy in -max_dy..=max_dy {
                     let node_2 = node_1.add(dx, dy);
 
-                    if node_2.x < node_1.x ||  (node_2.x == node_1.x && node_2.y <= node_1.y) {
+                    if node_2.x < node_1.x || (node_2.x == node_1.x && node_2.y <= node_1.y) {
                         continue;
                     }
 
                     if nodes.contains(&node_2) {
                         let manhattan_distance = node_1.manhattan_distance(node_2);
-                        let (cost_1_from_start, cost_2_from_end) = self.calculate_cost_for_neighbours(*node_1, node_2);
-                        let cheat_cost = cost_1_from_start + manhattan_distance as u64 + cost_2_from_end;
+                        let (cost_1_from_start, cost_2_from_end) =
+                            self.calculate_cost_for_neighbours(*node_1, node_2);
+                        let cheat_cost =
+                            cost_1_from_start + manhattan_distance as u64 + cost_2_from_end;
                         let diff = self.original_cost.saturating_sub(cheat_cost);
                         if diff >= self.min_saved_cost {
                             result += 1;
@@ -202,7 +216,8 @@ impl Day20 {
             }
         }
 
-        let walkable: HashSet<Point> = HashSet::from_iter(self.grid.filter_contains(&POSSIBLE_CHARS));
+        let walkable: HashSet<Point> =
+            HashSet::from_iter(self.grid.filter_contains(&POSSIBLE_CHARS));
         for a in walkable.iter() {
             for (dx, dy) in offsets.iter() {
                 let b = a.add(*dx, *dy);
@@ -210,7 +225,10 @@ impl Day20 {
                     continue;
                 }
                 if walkable.contains(&b) && de[b.x as usize][b.y as usize] >= 0 {
-                    let new_cost = ds[a.x as usize][a.y as usize] + dx.abs() + dy.abs() + de[b.x as usize][b.y as usize];
+                    let new_cost = ds[a.x as usize][a.y as usize]
+                        + dx.abs()
+                        + dy.abs()
+                        + de[b.x as usize][b.y as usize];
                     if original_cost - new_cost >= self.min_saved_cost as i32 {
                         result += 1;
                     }
@@ -223,7 +241,9 @@ impl Day20 {
 }
 
 impl BaseDay for Day20 {
-    fn get_day_number(&self) -> u32 { self.day_number }
+    fn get_day_number(&self) -> u32 {
+        self.day_number
+    }
 
     fn part_1(&mut self) -> Result<String, Box<dyn Error>> {
         let mut result = 0;
@@ -300,4 +320,3 @@ mod tests {
         assert_eq!(result, expected);
     }
 }
-                

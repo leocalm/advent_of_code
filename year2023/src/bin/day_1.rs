@@ -1,11 +1,14 @@
+use common::base_day::BaseDay;
+use common::file::get_input_path;
+use common::utils::init_logger;
+use log::info;
 use std::error::Error;
 use std::path::PathBuf;
-use log::info;
-use common::base_day::BaseDay;
-use common::utils::init_logger;
-use common::file::get_input_path;
 
-const DIGITS: [&str; 20] = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+const DIGITS: [&str; 20] = [
+    "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "0", "1", "2",
+    "3", "4", "5", "6", "7", "8", "9",
+];
 
 pub struct Day1 {
     day_number: u32,
@@ -113,8 +116,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    use common::file::get_data_dir;
     use super::*;
+    use common::file::get_data_dir;
     use common::test_utils;
 
     #[test]
