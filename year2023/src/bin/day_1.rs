@@ -94,7 +94,6 @@ impl BaseDay for Day1 {
                 first_digit = last_digit;
             }
 
-            println!("{} - {} {}", line, first_digit, last_digit);
             result += first_digit * 10 + last_digit;
         }
 

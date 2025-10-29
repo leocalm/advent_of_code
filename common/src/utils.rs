@@ -2,9 +2,11 @@ use crate::graph::{Graph, Node};
 use crate::grid::{Grid, Point};
 use env_logger::Env;
 use itertools::Itertools;
+use pretty_bytes::converter::convert;
 use std::collections::VecDeque;
 use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
+use sysinfo::{Pid, System};
 
 #[allow(dead_code)]
 pub const DIFFS: [(i32, i32); 4] = [(0, 1), (0, -1), (1, 0), (-1, 0)];
@@ -296,4 +298,41 @@ pub fn bron_kerbosch<T>(
         p.remove(&v);
         x.insert(v);
     }
+}
+
+pub fn measure_function<F, T>(label: &str, func: F) -> T
+where
+    F: FnOnce() -> T,
+{
+    let mut sys = System::new_all();
+    sys.refresh_all();
+
+    let pid = std::process::id();
+    let memory_before = sys.process(Pid::from_u32(pid)).unwrap().memory() as f64;
+
+    let start = std::time::Instant::now();
+    let result = func();
+    let elapsed = start.elapsed();
+
+    let pid = std::process::id();
+    let memory_after = sys.process(Pid::from_u32(pid)).unwrap().memory() as f64;
+    let memory_used = memory_after - memory_before;
+
+    println!(
+        "{} took {:.2?} and used {:?}",
+        label,
+        elapsed,
+        convert(memory_used)
+    );
+    result
+}
+
+#[macro_export]
+macro_rules! time_it {
+    ($label:expr, $block:block) => {{
+        let start = std::time::Instant::now();
+        let result = { $block };
+        println!("⏱️  {} took: {:.2?}", $label, start.elapsed());
+        result
+    }};
 }

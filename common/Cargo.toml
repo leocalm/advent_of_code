@@ -10,3 +10,5 @@ reqwest = "0.12.24"
 env_logger = "0.11.8"
 serde = { version = "1.0.228", features = ["derive"] }
 figment = { version = "0.10.19", features = ["toml", "env"] }
+sysinfo = "0.37.2"
+pretty-bytes = "0.2.2"
