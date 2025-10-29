@@ -4,7 +4,6 @@ use common::utils::init_logger;
 use log::{info, warn};
 use std::error::Error;
 use std::path::PathBuf;
-use std::u32;
 
 const MAX_RED: u32 = 12;
 const MAX_GREEN: u32 = 13;
@@ -44,6 +43,12 @@ impl Draw {
 pub struct Day2 {
     day_number: u32,
     file_path: PathBuf,
+}
+
+impl Default for Day2 {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Day2 {

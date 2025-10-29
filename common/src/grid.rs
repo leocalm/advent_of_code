@@ -98,10 +98,7 @@ impl<T: PartialEq + Debug + Eq + Hash + Clone + Display> Grid<T> {
         }
 
         self.data.insert(point, value.clone());
-        self.cache
-            .entry(value)
-            .or_default()
-            .insert(point);
+        self.cache.entry(value).or_default().insert(point);
     }
 
     pub fn get(&self, point: Point) -> Option<&T> {
@@ -219,7 +216,7 @@ impl<T: PartialEq + Debug + Eq + Hash + Clone + Display> Display for Grid<T> {
                         })
                         .unwrap()
                 )
-                    .as_str(),
+                .as_str(),
             );
         }
 

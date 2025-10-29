@@ -64,18 +64,12 @@ impl<T: PartialEq + Eq + Copy + Hash> Graph<T> {
             target,
             weight,
         };
-        self.edges
-            .entry(source)
-            .or_default()
-            .insert(new_edge);
+        self.edges.entry(source).or_default().insert(new_edge);
         new_edge
     }
 
     pub fn add_simple_edge(&mut self, source: u32, target: u32) {
-        self.simple_edges
-            .entry(source)
-            .or_default()
-            .insert(target);
+        self.simple_edges.entry(source).or_default().insert(target);
     }
 
     pub fn dijkstra(&self, start_node: u32) -> (HashMap<u32, u64>, HashMap<u32, Vec<u32>>) {
@@ -137,7 +131,7 @@ impl<T: PartialEq + Eq + Copy + Hash> Graph<T> {
     }
 
     pub fn get_node_id(&self, node: Node<T>) -> Option<u32> {
-        self.nodes_cache.get(&node).map(|id| *id)
+        self.nodes_cache.get(&node).copied()
     }
 
     pub fn get_connected_nodes(&self, node_id: u32) -> HashSet<u32> {

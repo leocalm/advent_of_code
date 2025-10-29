@@ -28,7 +28,7 @@ pub async fn download_input_file(year: u32, day: u32) -> Result<(), Box<dyn std:
 
     let client = reqwest::Client::new();
     let response = client
-        .get(&format!(
+        .get(format!(
             "https://adventofcode.com/{}/day/{}/input",
             year, day
         ))

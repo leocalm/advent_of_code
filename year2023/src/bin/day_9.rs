@@ -10,6 +10,12 @@ pub struct Day9 {
     file_path: PathBuf,
 }
 
+impl Default for Day9 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Day9 {
     pub fn new() -> Day9 {
         Day9 {

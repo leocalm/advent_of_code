@@ -33,6 +33,12 @@ pub struct Day3 {
     part_numbers: Vec<PartNumber>,
 }
 
+impl Default for Day3 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Day3 {
     pub fn new() -> Day3 {
         Day3 {
@@ -49,11 +55,11 @@ impl Day3 {
             let mut y = 0;
             while y < grid.cols() {
                 if let Some(c) = grid.get(Point { x, y })
-                    && c.is_digit(10)
+                    && c.is_ascii_digit()
                 {
                     let number_chars: Vec<char> = (y..grid.cols())
                         .map(|col| *grid.get(Point { x, y: col }).unwrap())
-                        .take_while(|c| c.is_digit(10))
+                        .take_while(|c| c.is_ascii_digit())
                         .collect();
                     part_numbers.push(PartNumber::new(
                         &number_chars,
@@ -102,7 +108,7 @@ impl Day3 {
             .part_numbers
             .iter()
             .filter(|part_number| {
-                self.possible_part_positions(&part_number)
+                self.possible_part_positions(part_number)
                     .iter()
                     .any(|possible| possible == gear)
             })
@@ -137,7 +143,7 @@ impl BaseDay for Day3 {
             .part_numbers
             .iter()
             .filter(|part_number| {
-                self.possible_part_positions(&part_number)
+                self.possible_part_positions(part_number)
                     .iter()
                     .any(|possible| parts.contains(possible))
             })

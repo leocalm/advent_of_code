@@ -11,7 +11,7 @@ pub const DIFFS: [(i32, i32); 4] = [(0, 1), (0, -1), (1, 0), (-1, 0)];
 
 pub fn get_neighbours(grid: &Grid<char>, current_position: Point) -> Vec<Point> {
     let mut result = vec![];
-    for diff in vec![(-1, 0), (1, 0), (0, -1), (0, 1)] {
+    for diff in [(-1, 0), (1, 0), (0, -1), (0, 1)] {
         let neighbour_position = current_position.add(diff.0, diff.1);
         if grid.get(neighbour_position).is_some_and(|n| *n == '.') {
             result.push(neighbour_position);

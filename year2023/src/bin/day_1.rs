@@ -15,6 +15,12 @@ pub struct Day1 {
     file_path: PathBuf,
 }
 
+impl Default for Day1 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Day1 {
     pub fn new() -> Day1 {
         Day1 {
@@ -37,7 +43,7 @@ impl BaseDay for Day1 {
             let mut last_digit = None;
 
             line.chars().for_each(|c| {
-                if c.is_digit(10) {
+                if c.is_ascii_digit() {
                     if first_digit.is_none() {
                         first_digit = Some(c.to_digit(10).unwrap());
                     }
@@ -63,20 +69,20 @@ impl BaseDay for Day1 {
             let mut last_position = 0;
 
             for (index, digit) in DIGITS.iter().enumerate() {
-                if let Some(position) = line.find(digit) {
-                    if position < first_position {
-                        first_position = position;
-                        first_digit = if index < 10 { index } else { index - 10 };
-                    }
+                if let Some(position) = line.find(digit)
+                    && position < first_position
+                {
+                    first_position = position;
+                    first_digit = if index < 10 { index } else { index - 10 };
                 }
             }
 
             for (index, digit) in DIGITS.iter().enumerate() {
-                if let Some(position) = line.rfind(digit) {
-                    if position > last_position {
-                        last_position = position;
-                        last_digit = if index < 10 { index } else { index - 10 };
-                    }
+                if let Some(position) = line.rfind(digit)
+                    && position > last_position
+                {
+                    last_position = position;
+                    last_digit = if index < 10 { index } else { index - 10 };
                 }
             }
 
