@@ -1,11 +1,11 @@
 use common::base_day::BaseDay;
 use common::file::get_input_path;
+use common::time_it;
 use common::utils::init_logger;
 use log::info;
 use std::collections::HashMap;
 use std::error::Error;
 use std::path::PathBuf;
-use common::time_it;
 
 const MAP_ORDER: [&str; 7] = [
     "seed-to-soil",
@@ -61,14 +61,23 @@ impl Map {
     fn destination(&self, source: u128) -> u128 {
         self.entries
             .iter()
-            .filter_map(|entry| if (entry.source..entry.source + entry.size)
-                .contains(&source) { Some(entry.destination + (source - entry.source)) } else { None })
+            .filter_map(|entry| {
+                if (entry.source..entry.source + entry.size).contains(&source) {
+                    Some(entry.destination + (source - entry.source))
+                } else {
+                    None
+                }
+            })
             .min()
             .unwrap_or(source)
     }
 
     fn destinations(&self, start_source: u128, size: u128) -> Vec<(u128, u128)> {
-        if let Some(entry) = self.entries.iter().find(|entry| start_source >= entry.source && start_source < entry.source + entry.size) {
+        if let Some(entry) = self
+            .entries
+            .iter()
+            .find(|entry| start_source >= entry.source && start_source < entry.source + entry.size)
+        {
             let final_source = start_source + size;
 
             if final_source < entry.source + entry.size {
@@ -78,13 +87,19 @@ impl Map {
                 let start_destination = entry.destination + (start_source - entry.source);
                 let current_size = entry.size - (start_source - entry.source);
                 let mut destinations = vec![(start_destination, current_size)];
-                destinations.extend(self.destinations(start_source + current_size, size - current_size));
+                destinations
+                    .extend(self.destinations(start_source + current_size, size - current_size));
                 destinations
             }
         } else {
-            if let Some(entry) = self.entries.iter().find(|entry| (start_source + size) >= entry.source && start_source < entry.source) {
+            if let Some(entry) = self
+                .entries
+                .iter()
+                .find(|entry| (start_source + size) >= entry.source && start_source < entry.source)
+            {
                 let mut destinations = vec![(start_source, entry.source - start_source)];
-                destinations.extend(self.destinations(entry.source, size - (entry.source - start_source)));
+                destinations
+                    .extend(self.destinations(entry.source, size - (entry.source - start_source)));
                 destinations
             } else {
                 vec![(start_source, size)]
@@ -110,7 +125,7 @@ impl MapEntry {
 pub struct Day5 {
     day_number: u32,
     file_path: PathBuf,
-    puzzle_input: PuzzleInput
+    puzzle_input: PuzzleInput,
 }
 
 impl Default for Day5 {
@@ -138,8 +153,7 @@ impl Day5 {
             let [dest, src, size] = split[..3] else {
                 panic!("malformed map line");
             };
-            map.entries
-                .push(MapEntry::new(src, dest, size));
+            map.entries.push(MapEntry::new(src, dest, size));
             index += 1;
         }
 
@@ -177,23 +191,41 @@ impl Day5 {
     }
 
     fn map_through_destination(input: u128, maps: &HashMap<String, Map>) -> u128 {
-        MAP_ORDER.iter().fold(input, |value, key| maps[*key].destination(value))
+        MAP_ORDER
+            .iter()
+            .fold(input, |value, key| maps[*key].destination(value))
     }
 
     fn min_location(puzzle_input: &PuzzleInput) -> u128 {
-        puzzle_input.seeds.iter().map(|seed| Day5::map_through_destination(*seed, &puzzle_input.maps)).min().unwrap()
+        puzzle_input
+            .seeds
+            .iter()
+            .map(|seed| Day5::map_through_destination(*seed, &puzzle_input.maps))
+            .min()
+            .unwrap()
     }
 
     fn min_location_for_range(puzzle_input: &PuzzleInput) -> u128 {
-        puzzle_input.seeds.chunks(2)
-            .map(|chunk| {(chunk[0], chunk[1])})
+        puzzle_input
+            .seeds
+            .chunks(2)
+            .map(|chunk| (chunk[0], chunk[1]))
             .flat_map(|seed| puzzle_input.maps["seed-to-soil"].destinations(seed.0, seed.1))
             .flat_map(|soil| puzzle_input.maps["soil-to-fertilizer"].destinations(soil.0, soil.1))
-            .flat_map(|fertilizer| puzzle_input.maps["fertilizer-to-water"].destinations(fertilizer.0, fertilizer.1))
+            .flat_map(|fertilizer| {
+                puzzle_input.maps["fertilizer-to-water"].destinations(fertilizer.0, fertilizer.1)
+            })
             .flat_map(|water| puzzle_input.maps["water-to-light"].destinations(water.0, water.1))
-            .flat_map(|light| puzzle_input.maps["light-to-temperature"].destinations(light.0, light.1))
-            .flat_map(|temperature| puzzle_input.maps["temperature-to-humidity"].destinations(temperature.0, temperature.1))
-            .flat_map(|humidity| puzzle_input.maps["humidity-to-location"].destinations(humidity.0, humidity.1))
+            .flat_map(|light| {
+                puzzle_input.maps["light-to-temperature"].destinations(light.0, light.1)
+            })
+            .flat_map(|temperature| {
+                puzzle_input.maps["temperature-to-humidity"]
+                    .destinations(temperature.0, temperature.1)
+            })
+            .flat_map(|humidity| {
+                puzzle_input.maps["humidity-to-location"].destinations(humidity.0, humidity.1)
+            })
             .min_by_key(|value| value.0)
             .unwrap()
             .0
@@ -243,9 +275,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 #[cfg(test)]
 mod test_day_5 {
-    use rstest::*;
     use super::*;
     use common::file::get_data_dir;
+    use rstest::*;
 
     #[fixture]
     pub fn map() -> Map {
@@ -286,7 +318,12 @@ mod test_day_5 {
     #[case(35, 10, vec![(45, 5), (0, 5)])]
     #[case(35, 50, vec![(45, 5), (0, 10), (50, 10), (100, 20), (80, 5)])]
     #[case(15, 50, vec![(25, 25), (0, 10), (50, 10), (100, 5)])]
-    fn destinations_test(#[case] start_source: u128, #[case] size: u128, #[case] expected_destinations: Vec<(u128, u128)>, map: Map) {
+    fn destinations_test(
+        #[case] start_source: u128,
+        #[case] size: u128,
+        #[case] expected_destinations: Vec<(u128, u128)>,
+        map: Map,
+    ) {
         let result = map.destinations(start_source, size);
         assert_eq!(result, expected_destinations);
     }
@@ -303,12 +340,14 @@ mod test_day_5 {
     #[rstest]
     #[case(vec![10, 5], 40)]
     fn flat_map_test(#[case] seeds: Vec<u128>, #[case] min_destination: u128, map: Map) {
-        let result = seeds.chunks(2)
+        let result = seeds
+            .chunks(2)
             .flat_map(|seed| map.destinations(seed[0], seed[1]))
             .flat_map(|seed| map.destinations(seed.0, seed.1))
             .flat_map(|seed| map.destinations(seed.0, seed.1))
             .min_by_key(|value| value.0)
-            .unwrap().0;
+            .unwrap()
+            .0;
         assert_eq!(result, min_destination);
     }
 
