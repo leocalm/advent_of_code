@@ -2341,6 +2341,7 @@ dependencies = [
  "clap",
  "common",
  "env_logger",
+ "itertools",
  "log",
  "num-format",
  "pretty-bytes",
